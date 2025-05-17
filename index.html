@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Visual Language Models">
-  <meta name="keywords" content="Vision Language Models, Token Reduction, Video Understanding">
+        content="Roads to Rome (R2R): A neural token router that selectively utilizes LLMs only for critical, path-divergent tokens, while leaving the majority of token generation to the SLM.">
+  <meta name="keywords" content="Large Language Models, Small Language Models, Token Routing, Inference Efficiency">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FrameFusion: Efficient Token Reduction for Vision-Language Models</title>
+  <title>Roads to Rome (R2R): Efficiently Navigating Divergent Reasoning Paths with Small-Large Model Token Routing</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/token-visualization.css">
   <link rel="icon" href="./static/images/favicon.svg">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -31,6 +32,12 @@
   <script src="./static/js/bulma-carousel.min.js"></script>
   <script src="./static/js/bulma-slider.min.js"></script>
   <script src="./static/js/index.js"></script>
+  <script src="./static/js/token-visualization.js"></script>
+  
+  <!-- MathJax for rendering LaTeX math expressions -->
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
 </head>
 <body>
 
@@ -41,37 +48,35 @@
         <div class="column has-text-centered">
           <div class="columns is-centered is-vcentered">
             <div class="column is-2">
-              <img src="./static/images/logo.jpeg" alt="Logo" class="logo-image">
+              <img src="./static/images/logo.png" alt="Logo" class="logo-image">
             </div>
             <div class="column">
-              <h1 class="title is-1 publication-title">FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Visual Language Models</h1>
+              <h1 class="title is-1 publication-title">Roads to Rome (R2R):<br> Efficiently Navigating Divergent Reasoning Paths with Small-Large Model Token Routing</h1>
             </div>
           </div>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a>Tianyu Fu</a><sup>1,2*</sup>,</span>
+              <a>Author 1</a><sup>1*</sup>,</span>
             <span class="author-block">
-              <a>Tengxuan Liu</a><sup>1,2*</sup>,</span>
+              <a>Author 2</a><sup>2*</sup>,</span>
             <span class="author-block">
-              <a>Qinghao Han</a><sup>3*</sup>,</span>
+              <a>Author 3</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a>Guohao Dai</a><sup>4,2</sup>,</span>
+              <a>Author 4</a><sup>2</sup>,</span>
             <span class="author-block">
-              <a>Shengen Yan</a><sup>2</sup>,</span>
+              <a>Author 5</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a>Huazhong Yang</a><sup>1</sup>,</span>
+              <a>Author 6</a><sup>2</sup>,</span>
             <span class="author-block">
-              <a>Xuefei Ning</a><sup>1</sup>,</span>
+              <a>Author 7</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a>Yu Wang</a><sup>1</sup>
+              <a>Author 8</a><sup>2</sup>
             </span>
           </div>
 
           <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Tsinghua University,</span>
-            <span class="author-block"><sup>2</sup>Infinigence-AI,</span>
-            <span class="author-block"><sup>3</sup>Peking University,</span>
-            <span class="author-block"><sup>4</sup>Shanghai Jiao Tong University</span>
+            <span class="author-block"><sup>1</sup>Affiliation 1,</span>
+            <span class="author-block"><sup>2</sup>Affiliation 2</span>
             <br>
             <span class="author-block"><sup>*</sup>Equal contribution</span>
           </div>
@@ -99,7 +104,7 @@
               </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="https://github.com/thu-nics/FrameFusion"
+                <a href="YOUR_CODE_LINK_HERE"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -118,121 +123,88 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <img src="./static/images/illustration.png" alt="FrameFusion Overview">
+      <img src="./static/images/key_notion.png" alt="R2R Overview" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block;">
       <h2 class="subtitle has-text-centered">
-        <span class="framefusion">FrameFusion</span> reduces vision tokens by 70% in video LVLMs, achieving 1.6-3.6× end-to-end speedup with <3% accuracy drop.
+        <span class="r2r">Roads to Rome (R2R)</span> selectively utilizes LLMs only for critical, path-divergent tokens, leaving the majority of token generation to the SLM, achieving significant speedups with comparable performance.
       </h2>
     </div>
   </div>
 </section>
 
-
-<section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-      <!-- <h2 class="title is-3 has-text-centered">Example Results</h2> -->
-      <div id="results-carousel" class="carousel results-carousel">
-        <!-- Example 0: Tom and Jerry -->
-        <div class="item">
-          <div class="card">
-            <div class="card-image">
-              <figure class="image">
-                <video autoplay loop muted playsinline class="carousel-video">
-                  <source src="./static/images/carousel/Tom_Jerry_compressed.mp4" type="video/mp4">
-                </video>
-              </figure>
-            </div>
-            <div class="card-content">
-              <div class="content">
-                <div class="qa-section">
-                  <p class="question"><strong>Q:</strong> Which animal hit the cat? Answer it simply.</p>
-                  <div class="answer-comparison">
-                    <div class="answer-box">
-                      <div class="answer-label">Original</div>
-                      <div class="answer"><strong>A:</strong> Dog</div>
-                      <div class="token-count">13,440 tokens</div>
-                    </div>
-                    <div class="answer-box">
-                      <div class="answer-label">FrameFusion</div>
-                      <div class="answer"><strong>A:</strong> Dog</div>
-                      <div class="token-count">4,032 tokens</div>
-                    </div>
-                  </div>
+<!-- Token Visualization Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Token-Level Routing Visualization</h2>
+        
+        <!-- Math Problem Question -->
+        <div class="content has-text-left" style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem;">
+          <h3 class="title is-4">Example Problem:</h3>
+          <p>
+            Every morning Aya goes for a $9$-kilometer-long walk and stops at a coffee shop afterwards. When she walks at a constant speed of $s$ kilometers per hour, the walk takes her 4 hours, including $t$ minutes spent in the coffee shop. When she walks $s+2$ kilometers per hour, the walk takes her 2 hours and 24 minutes, including $t$ minutes spent in the coffee shop. Suppose Aya walks at $s+\frac{1}{2}$ kilometers per hour. Find the number of minutes the walk takes her, including the $t$ minutes spent in the coffee shop.
+          </p>
+        </div>
+        
+        <!-- Collapsible token visualization -->
+        <div class="card">
+          <header class="card-header">
+            <p class="card-header-title">
+              Mix inference response
+            </p>
+            <button class="card-header-icon" aria-label="toggle visualization" id="toggle-token-viz">
+              <span class="icon">
+                <i class="fas fa-angle-down" aria-hidden="true" id="toggle-icon"></i>
+              </span>
+            </button>
+          </header>
+          <div class="card-content" id="token-viz-container" style="display: none;">
+            <div class="token-display-container">
+              <div class="token-legend">
+                <div class="legend-item">
+                  <div class="legend-color legend-color-small"></div>
+                  <span>Identical (SLM)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color legend-color-small-diff"></div>
+                  <span>Neural Different (SLM)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color legend-color-large"></div>
+                  <span>Divergent (LLM)</span>
                 </div>
               </div>
+              <p class="token-instruction">Hover over blue or red text to see additional information</p>
+              <div id="token-content" class="token-content"></div>
             </div>
           </div>
         </div>
-
-        <!-- Example 1: Turing -->
-        <div class="item">
-          <div class="card">
-            <div class="card-image">
-              <figure class="image">
-                <video autoplay loop muted playsinline class="carousel-video">
-                  <source src="./static/images/carousel/Turing_compressed.mp4" type="video/mp4">
-                </video>
-              </figure>
-            </div>
-            <div class="card-content">
-              <div class="content">
-                <div class="qa-section">
-                  <p class="question"><strong>Q:</strong> How many main characters are there in the video?</p>
-                  <div class="answer-comparison">
-                    <div class="answer-box">
-                      <div class="answer-label">Original</div>
-                      <div class="answer"><strong>A:</strong> There are two main characters in the video.</div>
-                      <div class="token-count">10,290 tokens</div>
-                    </div>
-                    <div class="answer-box">
-                      <div class="answer-label">FrameFusion</div>
-                      <div class="answer"><strong>A:</strong> There are two main characters in the video.</div>
-                      <div class="token-count">3,087 tokens</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Example 2: Monkey -->
-        <div class="item">
-          <div class="card">
-            <div class="card-image">
-              <figure class="image">
-                <video autoplay loop muted playsinline class="carousel-video">
-                  <source src="./static/images/carousel/Monkey_compressed.mp4" type="video/mp4">
-                </video>
-              </figure>
-            </div>
-            <div class="card-content">
-              <div class="content">
-                <div class="qa-section">
-                  <p class="question"><strong>Q:</strong> What animal saves the monkey? Answer it simply.</p>
-                  <div class="answer-comparison">
-                    <div class="answer-box">
-                      <div class="answer-label">Original</div>
-                      <div class="answer"><strong>A:</strong> A turtle.</div>
-                      <div class="token-count">9,870 tokens</div>
-                    </div>
-                    <div class="answer-box">
-                      <div class="answer-label">FrameFusion</div>
-                      <div class="answer"><strong>A:</strong> A turtle.</div>
-                      <div class="token-count">2,961 tokens</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        
+        <!-- Add toggle script -->
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggle-token-viz');
+            const tokenContainer = document.getElementById('token-viz-container');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            toggleButton.addEventListener('click', function() {
+              if (tokenContainer.style.display === 'none') {
+                tokenContainer.style.display = 'block';
+                toggleIcon.classList.remove('fa-angle-down');
+                toggleIcon.classList.add('fa-angle-up');
+              } else {
+                tokenContainer.style.display = 'none';
+                toggleIcon.classList.remove('fa-angle-up');
+                toggleIcon.classList.add('fa-angle-down');
+              }
+            });
+          });
+        </script>
+        
       </div>
     </div>
   </div>
 </section>
-
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -242,15 +214,18 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            The increasing demand to process long and high-resolution videos significantly burdens Large Vision-Language Models (LVLMs) due to the enormous number of visual tokens.
-            Existing token reduction methods primarily focus on importance-based token pruning, which overlooks the redundancy caused by frame resemblance and repetitive visual elements.
+            Large Language Models (LLMs) achieve impressive reasoning capabilities at the cost of substantial inference overhead, posing substantial deployment challenges.
+            Although distilled Small Language Models (SLMs) significantly enhance efficiency, their performance suffers as they fail to follow LLMs' reasoning paths.
+            Luckily, we reveal that only a small fraction of tokens genuinely diverge reasoning paths between LLMs and SLMs. Most generated tokens are either identical or exhibit neutral differences, such as minor variations in abbreviations or expressions.
           </p>
           <p>
-            We analyze the high vision token similarities in LVLMs and reveal that token similarity distribution condenses as layers deepen while maintaining ranking consistency.
-            Leveraging the unique properties of similarity over importance, we introduce <span class="framefusion">FrameFusion</span>, a novel approach that combines similarity-based merging with importance-based pruning for better token reduction in LVLMs.
+            Leveraging this insight, we introduce <strong>Roads to Rome (R2R)</strong>, a neural token router that selectively utilizes LLMs only for these critical, path-divergent tokens, while leaving the majority of token generation to the SLM.
+            We also develop an automatic data generation pipeline that identifies divergent tokens and generates token-level routing labels to train the lightweight router.
           </p>
           <p>
-            Experiments show that <span class="framefusion">FrameFusion</span> reduces vision tokens by 70%, achieving 1.6 – 3.6× end-to-end speedups, with an average performance impact of less than 3%.
+            We apply R2R to combine R1-1.5B and R1-32B models from the DeepSeek family, and evaluate on challenging math, coding, and QA benchmarks.
+            With an average activated parameter size of 5.6B, R2R surpasses the average accuracy of R1-7B by 1.6x, outperforming even the R1-14B model.
+            Compared to R1-32B, it delivers a 2.8x wall-clock speedup with comparable performance, advancing the Pareto frontier of test-time scaling efficiency.
           </p>
         </div>
       </div>
@@ -265,30 +240,27 @@
         <!-- Method figure -->
         <div class="columns is-centered">
           <div class="column is-10">
-            <img src="./static/images/method_detail.png" alt="Method Overview" class="method-figure">
+            <img src="./static/images/data_gen_overview.png" alt="R2R Method Overview" class="method-figure">
             <p class="caption">
-              FrameFusion first merges tokens with similarities above a specified threshold at shallow layers, then applies top-k importance pruning to comply with the given computational constraints.
+              R2R's data labeling pipeline: LLM generates a response. SLM prefills to find different tokens. LLM continues from these points. A verifier labels differences as neutral or divergent.
             </p>
           </div>
         </div>
 
         <div class="content">
-          <h3 class="title is-4">Two-Stage Token Compression</h3>
+          <h3 class="title is-4">Token-Level Routing with R2R</h3>
           <p>
-            The core concept of FrameFusion is to combine similarity-based merging with importance-based pruning. Unlike traditional methods that primarily employ importance-based token pruning, FrameFusion emphasizes similarity-based token merging, retaining only tokens that are both important and unique.
+            The core idea of Roads to Rome (R2R) is to selectively use a large language model (LLM) only for critical, path-divergent tokens, while relying on a more efficient small language model (SLM) for the majority of token generation. This approach aims to minimize computational cost without significantly compromising the quality of the generated output, effectively following the LLM's reasoning path.
           </p>
 
-          <h4 class="title is-5">Merging Stage</h4>
+          <h4 class="title is-5">Path-Following Routing Strategy</h4>
           <p>
-            In the initial merging stage, FrameFusion utilizes token similarity to merge vision tokens. It computes token similarities between corresponding vision tokens of adjacent frames. Tokens exceeding the similarity threshold are grouped with their analogous tokens from the previous frame. Within each group, FrameFusion performs element-wise averaging of all tokens.
-          </p>
-          <p>
-            The merging stage is applied across successive shallow LLM layers to progressively merge similar tokens, until the number of similar tokens falls below a threshold. After the merging stage, the remaining unique tokens advance to the pruning stage.
+            To achieve this, R2R employs a path-following routing strategy. At each step, it compares SLM and LLM next-token predictions. If identical, the SLM token is used. If different, a continuation-and-verification mechanism determines if the difference is 'neutral' (not affecting the reasoning outcome) or 'divergent' (altering the reasoning path). Divergent tokens are routed to the LLM for correction, ensuring the generation stays aligned with the LLM's intended path. This is formalized by checking if an LLM-based continuation from the SLM's differing token maintains quality compared to an LLM-based continuation from the LLM's token.
           </p>
 
-          <h4 class="title is-5">Pruning Stage</h4>
+          <h4 class="title is-5">Data Generation and Router Training</h4>
           <p>
-            After merging, FrameFusion further prunes unimportant tokens using cumulative attention scores. Based on a user-defined computational cost budget, it calculates the maximum number of remaining tokens that fits within the budget, then applies top-k importance pruning to retain only the important tokens from the remaining unique ones.
+            R2R features an automatic data generation pipeline to create training labels for a lightweight neural router. First, an LLM generates a reference response. Then, an SLM attempts to prefill this path, identifying points of token divergence. For each differing SLM token, the LLM generates a continuation. A verifier model (another capable LLM) then compares these continuations to label the initial difference as 'neutral' or 'divergent'. This labeled data, focusing on sentence-level divergences for efficiency, is used to train a neural router. The router, a small feed-forward network, learns to predict divergence based on SLM logits, token embeddings (capturing frequency biases), and hidden states, enabling immediate routing decisions during inference without needing to wait for LLM verification at each step.
           </p>
         </div>
       </div>
@@ -307,12 +279,12 @@
       <!-- Observation 1 -->
       <div class="column">
         <div class="content observation-content">
-          <h3 class="title is-4">Observation 1:<br>Adjacent Similarity</h3>
+          <h3 class="title is-4">Observation 1:<br>Token Divergence Rarity</h3>
           <div class="observation-image-container">
-            <img src="./static/images/token_similarity.png" alt="Token similarity between frames">
+            <img src="./static/images/distribution.png" alt="Distribution of identical, neutral, and divergent tokens">
           </div>
           <div class="observation-text">
-            <p>High similarity between adjacent frames</p>
+            <p>Only a small fraction of tokens genuinely diverge reasoning paths between LLMs and SLMs. Most are identical or neutral.</p>
           </div>
           <div class="observation-arrow">
             <span class="icon has-text-info">
@@ -320,7 +292,7 @@
             </span>
           </div>
           <div class="observation-design">
-            <p><strong>Design Choice:</strong> O(N) adjacent-only computation</p>
+            <p><strong>Design Choice:</strong> Selectively use LLMs only for critical, path-divergent tokens. SLM handles the majority.</p>
           </div>
         </div>
       </div>
@@ -328,12 +300,12 @@
       <!-- Observation 2 -->
       <div class="column">
         <div class="content observation-content">
-          <h3 class="title is-4">Observation 2:<br>Layer-wise Distribution</h3>
+          <h3 class="title is-4">Observation 2:<br>SLM Entropy as Indicator</h3>
           <div class="observation-image-container">
-            <img src="./static/images/similarity_distribution.png" alt="Token similarity distribution across layers">
+            <img src="./static/images/entropy_distribution.png" alt="SLM entropy distribution for divergent vs. non-divergent tokens">
           </div>
           <div class="observation-text">
-            <p>Token similarity distribution condenses as layers deepen</p>
+            <p>Divergent tokens exhibit substantially higher entropy in the SLM's output logits.</p>
           </div>
           <div class="observation-arrow">
             <span class="icon has-text-info">
@@ -341,7 +313,7 @@
             </span>
           </div>
           <div class="observation-design">
-            <p><strong>Design Choice:</strong> Apply merging at shallow layers</p>
+            <p><strong>Design Choice:</strong> Router utilizes top SLM logit values as an input feature to predict divergence.</p>
           </div>
         </div>
       </div>
@@ -349,12 +321,12 @@
       <!-- Observation 3 -->
       <div class="column">
         <div class="content observation-content">
-          <h3 class="title is-4">Observation 3:<br>Ranking Consistency</h3>
+          <h3 class="title is-4">Observation 3:<br>Token Frequency Matters</h3>
           <div class="observation-image-container">
-            <img src="./static/images/spearman_rank_correlation.png" alt="Similarity ranking consistency">
+            <img src="./static/images/token_divergence_frequency.png" alt="Divergence rate vs. token frequency">
           </div>
           <div class="observation-text">
-            <p>High similarity ranking consistency across layers</p>
+            <p>Low-frequency tokens are more likely to be divergent due to limited SLM capacity for rare tokens.</p>
           </div>
           <div class="observation-arrow">
             <span class="icon has-text-info">
@@ -362,7 +334,7 @@
             </span>
           </div>
           <div class="observation-design">
-            <p><strong>Design Choice:</strong> Cascaded merging strategy</p>
+            <p><strong>Design Choice:</strong> Router incorporates token embeddings as input, capturing token-frequency biases.</p>
           </div>
         </div>
       </div>
@@ -375,60 +347,70 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3">Results</h2>
 
-    <!-- Performance vs Budget -->
+    <!-- Performance vs Efficiency Table -->
     <div class="content">
-      <h3 class="title is-4">Performance vs. Token Budget</h3>
-      <table class="table is-fullwidth">
+      <h3 class="title is-4">Performance and Efficiency Comparison (Average over Benchmarks)</h3>
+      <table class="table is-fullwidth is-hoverable">
         <thead>
           <tr>
-            <th>Token Budget</th>
-            <th>VideoMME</th>
-            <th>NExt-QA-MC</th>
-            <th>NExt-QA-OE</th>
-            <th>Max Drop</th>
+            <th>Method</th>
+            <th>Accuracy (Acc.) $\uparrow$</th>
+            <th>Avg. Params ($\bar{M}$) $\downarrow$</th>
+            <th>Cost (K$\times$B) $\downarrow$</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>30%</td>
-            <td>61.3 (-3.0%)</td>
-            <td>81.8 (-1.7%)</td>
-            <td>31.7 (-1.2%)</td>
-            <td>3.0%</td>
+            <td>R1-1.5B (SLM)</td>
+            <td>10%</td>
+            <td>1.5B</td>
+            <td>42</td>
           </tr>
           <tr>
+            <td>R1-7B</td>
+            <td>28%</td>
+            <td>7.0B</td>
+            <td>154</td>
+          </tr>
+          <tr>
+            <td>R1-14B</td>
+            <td>43%</td>
+            <td>14.0B</td>
+            <td>234</td>
+          </tr>
+          <tr>
+            <td>R1-32B (LLM)</td>
             <td>50%</td>
-            <td>62.6 (-0.9%)</td>
-            <td>82.7 (-0.6%)</td>
-            <td>32.1 (0.0%)</td>
-            <td>0.9%</td>
+            <td>32.0B</td>
+            <td>537</td>
           </tr>
           <tr>
-            <td>70%</td>
-            <td>63.0 (-0.3%)</td>
-            <td>82.8 (-0.5%)</td>
-            <td>32.1 (0.0%)</td>
-            <td>0.5%</td>
+            <td><strong>R2R (Ours)</strong></td>
+            <td><strong>46%</strong></td>
+            <td><strong>5.6B</strong></td>
+            <td><strong>103</strong></td>
           </tr>
         </tbody>
       </table>
+      <p class="has-text-centered">
+        R2R achieves 4.6$\times$ higher accuracy than R1-1.5B and retains 92% of R1-32B's accuracy, with only 5.6B average activated parameters and significantly lower cost.
+      </p>
     </div>
 
-    <!-- Speedup Across Models -->
+    <!-- Scaling Behavior and Speedup -->
     <div class="content">
-      <h3 class="title is-4">Speedup Across Models</h3>
+      <h3 class="title is-4">Scaling Behavior & Speedup</h3>
       <div class="columns is-centered">
-        <div class="column is-8">
-          <img src="./static/images/efficiency.png" alt="Speedup across different model sizes">
+        <div class="column is-10">
+          <img src="./static/images/all_pareto_subplots_params.png" alt="Accuracy vs. Average Activated Parameters per Token">
+          <p class="caption has-text-centered">
+            R2R advances the Pareto frontier for accuracy versus average activated parameters, outperforming distillation and query-level routing methods.
+          </p>
         </div>
       </div>
-      <p>
-        <span class="framefusion">FrameFusion</span> achieves:
+      <p class="has-text-centered">
+        R2R delivers a <strong>2.8$\times$</strong> wall-clock speedup compared to R1-32B with comparable performance, and <strong>1.6$\times$</strong> speedup over R1-14B.
       </p>
-      <ul>
-        <li>1.6 – 3.6× end-to-end speedup</li>
-        <li>Scales better with larger models and more frames</li>
-      </ul>
     </div>
   </div>
 </section>
@@ -436,44 +418,26 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3">Interactive Demo</h2>
+    <h2 class="title is-3">Visualizing R2R Routing Behavior</h2>
 
     <div class="content has-text-centered">
       <p>
-        Compare the original video frames with FrameFusion-processed frames. Use the slider to see how our method maintains visual quality while reducing tokens.
+        R2R learns to dynamically allocate LLM usage based on the reasoning process. The following visualization shows the LLM usage rate at different normalized positions within the generation process on the AIME benchmark.
       </p>
     </div>
 
     <div class="columns is-centered">
-      <div class="column is-10">
-        <div class="columns is-vcentered interpolation-panel">
-          <div class="column is-3 has-text-centered">
-            <img src="./static/images/tom_jerry/frame_60.png"
-                 class="interpolation-image"
-                 alt="Original frame"/>
-            <p>Original Frame<br/>(256 tokens)</p>
-          </div>
-          <div class="column interpolation-video-column">
-            <div id="interpolation-image-wrapper">
-              Loading...
-            </div>
-            <input class="slider is-fullwidth is-large is-info"
-                   id="interpolation-slider"
-                   step="1" min="0" max="100" value="0" type="range">
-          </div>
-          <div class="column is-3 has-text-centered">
-            <img src="./static/images/tom_jerry_prune/frame_60.png"
-                 class="interpolation-image"
-                 alt="Pruned frame"/>
-            <p>After FrameFusion<br/>(77 tokens)</p>
-          </div>
-        </div>
+      <div class="column is-8">
+        <img src="./static/images/routing_observation.png" alt="LLM usage rate at different positions">
+        <p class="caption has-text-centered">
+         (a) LLM usage across the entire thinking and reply process. (b) LLM usage within each thought segment. R2R routes fewer tokens to LLM during replies and relies more on LLM at the beginning/end of thoughts.
+        </p>
       </div>
     </div>
 
     <div class="content has-text-centered">
       <p>
-        Token reduction maintains semantic understanding while significantly reducing computation.
+        These emergent routing patterns highlight R2R's ability to efficiently allocate computational resources where they are most needed.
       </p>
     </div>
   </div>
@@ -483,11 +447,11 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{fu2024framefusion,
-  title     = {FrameFusion: Combining Similarity and Importance for Video Token Reduction on Large Visual Language Models},
-  author    = {Fu, Tianyu and Liu, Tengxuan and Han, Qinghao and Dai, Guohao and Yan, Shengen and Yang, Huazhong and Ning, Xuefei and Wang, Yu},
+    <pre><code>@article{fu2025r2r,
+  title     = {Roads to Rome (R2R): Efficient LLM Inference via Neural Token Routing},
+  author    = {Author 1 and Author 2 and Author 3 and Author 4 and Author 5 and Author 6 and Author 7 and Author 8},
   journal   = {arXiv preprint arXiv:2501.01986},
-  year      = {2024}
+  year      = {2025}
 }</code></pre>
   </div>
 </section>
@@ -499,7 +463,7 @@
       <a class="icon-link" href="https://arxiv.org/pdf/2501.01986">
         <i class="fas fa-file-pdf"></i>
       </a>
-      <a class="icon-link" href="https://github.com/thu-nics/FrameFusion" class="external-link">
+      <a class="icon-link" href="YOUR_CODE_LINK_HERE" class="external-link">
         <i class="fab fa-github"></i>
       </a>
     </div>
