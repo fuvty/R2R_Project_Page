@@ -34,6 +34,22 @@
   <script src="./static/js/index.js"></script>
   <script src="./static/js/token-visualization.js"></script>
   
+  <!-- MathJax Configuration -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      startup: {
+        elements: ['.math-content'] // Only process elements with this class
+      }
+    };
+  </script>
   <!-- MathJax for rendering LaTeX math expressions -->
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
@@ -139,7 +155,7 @@
         <h2 class="title is-3">Token-Level Routing Visualization</h2>
         
         <!-- Math Problem Question -->
-        <div class="content has-text-left" style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem;">
+        <div class="content has-text-left math-content" style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem;">
           <h3 class="title is-4">Example Problem:</h3>
           <p>
             Every morning Aya goes for a $9$-kilometer-long walk and stops at a coffee shop afterwards. When she walks at a constant speed of $s$ kilometers per hour, the walk takes her 4 hours, including $t$ minutes spent in the coffee shop. When she walks $s+2$ kilometers per hour, the walk takes her 2 hours and 24 minutes, including $t$ minutes spent in the coffee shop. Suppose Aya walks at $s+\frac{1}{2}$ kilometers per hour. Find the number of minutes the walk takes her, including the $t$ minutes spent in the coffee shop.
@@ -154,7 +170,12 @@
             </p>
             <button class="card-header-icon" aria-label="toggle visualization" id="toggle-token-viz">
               <span class="icon">
-                <i class="fas fa-angle-down" aria-hidden="true" id="toggle-icon"></i>
+                <i class="fas fa-play" aria-hidden="true" id="toggle-icon"></i>
+              </span>
+            </button>
+            <button class="card-header-icon" aria-label="fast forward" id="fast-forward-btn" style="display: none;">
+              <span class="icon">
+                <i class="fas fa-fast-forward" aria-hidden="true"></i>
               </span>
             </button>
           </header>
@@ -184,18 +205,72 @@
         <script>
           document.addEventListener('DOMContentLoaded', function() {
             const toggleButton = document.getElementById('toggle-token-viz');
-            const tokenContainer = document.getElementById('token-viz-container');
+            const tokenVizContainer = document.getElementById('token-viz-container');
             const toggleIcon = document.getElementById('toggle-icon');
-            
+            const tokenContent = document.getElementById('token-content');
+            const fastForwardButton = document.getElementById('fast-forward-btn');
+            let animationRunning = false;
+            let typeNextTokenTimeout;
+            let allTokens = []; // To store all token elements
+
             toggleButton.addEventListener('click', function() {
-              if (tokenContainer.style.display === 'none') {
-                tokenContainer.style.display = 'block';
-                toggleIcon.classList.remove('fa-angle-down');
+              if (tokenVizContainer.style.display === 'none') { // Expanding
+                tokenVizContainer.style.display = 'block';
+                toggleIcon.classList.remove('fa-play');
                 toggleIcon.classList.add('fa-angle-up');
-              } else {
-                tokenContainer.style.display = 'none';
+
+                if (tokenContent && tokenContent.children.length > 0 && !animationRunning) {
+                  animationRunning = true;
+                  fastForwardButton.style.display = 'block'; // Show fast-forward button
+                  allTokens = Array.from(tokenContent.children);
+                  
+                  allTokens.forEach(token => {
+                    token.style.display = 'none';
+                  });
+                  
+                  tokenContent.style.display = 'block';
+
+                  let i = 0;
+                  function typeNextToken() {
+                    if (!animationRunning) return; // Stop if fast-forwarded or collapsed
+
+                    if (i < allTokens.length) {
+                      const currentToken = allTokens[i];
+                      currentToken.style.display = 'inline';
+                      
+                      let delay = 50;
+                      if (currentToken.classList.contains('token-type-0') || currentToken.classList.contains('token-type-1')) {
+                        delay = 20;
+                      } else if (currentToken.classList.contains('token-type-2')) {
+                        delay = 250; // User-adjusted delay for red tokens
+                      }
+                      
+                      i++;
+                      typeNextTokenTimeout = setTimeout(typeNextToken, delay);
+                    } else {
+                      animationRunning = false;
+                      fastForwardButton.style.display = 'none'; // Hide button when done
+                    }
+                  }
+                  typeNextToken();
+                }
+              } else { // Collapsing
+                tokenVizContainer.style.display = 'none';
                 toggleIcon.classList.remove('fa-angle-up');
-                toggleIcon.classList.add('fa-angle-down');
+                toggleIcon.classList.add('fa-play');
+                clearTimeout(typeNextTokenTimeout);
+                animationRunning = false; 
+                fastForwardButton.style.display = 'none'; // Hide button on collapse
+              }
+            });
+
+            fastForwardButton.addEventListener('click', function() {
+              if (animationRunning) {
+                clearTimeout(typeNextTokenTimeout);
+                animationRunning = false;
+                allTokens.forEach(token => token.style.display = 'inline'); // Show all tokens
+                tokenContent.style.display = 'block'; // Ensure parent is visible
+                fastForwardButton.style.display = 'none'; // Hide button after fast-forwarding
               }
             });
           });
@@ -350,13 +425,13 @@
     <!-- Performance vs Efficiency Table -->
     <div class="content">
       <h3 class="title is-4">Performance and Efficiency Comparison (Average over Benchmarks)</h3>
-      <table class="table is-fullwidth is-hoverable">
+      <table class="table is-fullwidth is-hoverable no-mathjax">
         <thead>
           <tr>
             <th>Method</th>
-            <th>Accuracy (Acc.) $\uparrow$</th>
-            <th>Avg. Params ($\bar{M}$) $\downarrow$</th>
-            <th>Cost (K$\times$B) $\downarrow$</th>
+            <th>Accuracy</th>
+            <th>Avg. Param.</th>
+            <th>Cost (K*B)</th>
           </tr>
         </thead>
         <tbody>
@@ -392,7 +467,7 @@
           </tr>
         </tbody>
       </table>
-      <p class="has-text-centered">
+      <p class="has-text-centered no-mathjax">
         R2R achieves 4.6$\times$ higher accuracy than R1-1.5B and retains 92% of R1-32B's accuracy, with only 5.6B average activated parameters and significantly lower cost.
       </p>
     </div>
@@ -408,7 +483,7 @@
           </p>
         </div>
       </div>
-      <p class="has-text-centered">
+      <p class="has-text-centered no-mathjax">
         R2R delivers a <strong>2.8$\times$</strong> wall-clock speedup compared to R1-32B with comparable performance, and <strong>1.6$\times$</strong> speedup over R1-14B.
       </p>
     </div>
