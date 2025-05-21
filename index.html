@@ -38,7 +38,7 @@
   <script>
     MathJax = {
       tex: {
-        inlineMath: [['$', '$'], ['\(', '\)']],
+        inlineMath: [['$', '$']],
         displayMath: [['$$', '$$'], ['\[', '\]']],
         processEscapes: true
       },
@@ -66,35 +66,38 @@
             <div class="column is-2">
               <img src="./static/images/logo.png" alt="Logo" class="logo-image">
             </div>
-            <div class="column">
+            <div class="column has-text-left">
               <h1 class="title is-1 publication-title">Roads to Rome (R2R):<br> Efficiently Navigating Divergent Reasoning Paths with Small-Large Model Token Routing</h1>
             </div>
           </div>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a>Author 1</a><sup>1*</sup>,</span>
+              <a href="https://nicsefc.ee.tsinghua.edu.cn/people/TianyuFu">Tianyu Fu</a><sup>1,2*</sup>,</span>
             <span class="author-block">
-              <a>Author 2</a><sup>2*</sup>,</span>
+              <a>Yi Ge</a><sup>1*</sup>,</span>
             <span class="author-block">
-              <a>Author 3</a><sup>1</sup>,</span>
+              <a>Yichen You</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a>Author 4</a><sup>2</sup>,</span>
+              <a href="https://nicsefc.ee.tsinghua.edu.cn/people/EnshuLiu">Enshu Liu</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a>Author 5</a><sup>1</sup>,</span>
+              <a href="https://zhihang.cc/">Zhihang Yuan</a><sup>2</sup>,</span><br>
             <span class="author-block">
-              <a>Author 6</a><sup>2</sup>,</span>
+              <a href="https://dai.sjtu.edu.cn/pepledetail.html?id=218">Guohao Dai</a><sup>2,3</sup>,</span>
             <span class="author-block">
-              <a>Author 7</a><sup>1</sup>,</span>
+              <a>Shengen Yan</a><sup>1,2</sup>,</span>
             <span class="author-block">
-              <a>Author 8</a><sup>2</sup>
+              <a>Huazhong Yang</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://nicsefc.ee.tsinghua.edu.cn/people/YuWang">Yu Wang</a><sup>1</sup>
             </span>
           </div>
 
           <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Affiliation 1,</span>
-            <span class="author-block"><sup>2</sup>Affiliation 2</span>
+            <span class="author-block"><sup>1</sup>Tsinghua University,</span>
+            <span class="author-block"><sup>2</sup>Infinigence AI,</span>
+            <span class="author-block"><sup>3</sup>Shanghai Jiao Tong University</span>
             <br>
-            <span class="author-block"><sup>*</sup>Equal contribution</span>
+            <span class="author-block"><sup>*</sup><i>Equal contribution</i></span>
           </div>
 
           <div class="column has-text-centered">
@@ -141,7 +144,8 @@
     <div class="hero-body">
       <img src="./static/images/key_notion.png" alt="R2R Overview" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block;">
       <h2 class="subtitle has-text-centered">
-        <span class="r2r">Roads to Rome (R2R)</span> selectively utilizes LLMs only for critical, path-divergent tokens, leaving the majority of token generation to the SLM, achieving significant speedups with comparable performance.
+        <span class="r2r">Roads to Rome (R2R)</span> selectively utilizes LLMs only for critical, path-divergent tokens, leaving the majority of token generation to the SLM.
+        With an average activated parameter size of 5.6B, R2R surpasses the average accuracy of R1-7B by 1.6x, outperforming even the R1-14B model.
       </h2>
     </div>
   </div>
@@ -152,50 +156,51 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Token-Level Routing Visualization</h2>
+        <h2 class="title is-3">Path-Following Routing Illustration</h2>
         
         <!-- Math Problem Question -->
         <div class="content has-text-left math-content" style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem;">
-          <h3 class="title is-4">Example Problem:</h3>
+          <h3 class="title is-5">Example Problem:</h3>
           <p>
             Every morning Aya goes for a $9$-kilometer-long walk and stops at a coffee shop afterwards. When she walks at a constant speed of $s$ kilometers per hour, the walk takes her 4 hours, including $t$ minutes spent in the coffee shop. When she walks $s+2$ kilometers per hour, the walk takes her 2 hours and 24 minutes, including $t$ minutes spent in the coffee shop. Suppose Aya walks at $s+\frac{1}{2}$ kilometers per hour. Find the number of minutes the walk takes her, including the $t$ minutes spent in the coffee shop.
           </p>
         </div>
         
         <!-- Collapsible token visualization -->
-        <div class="card">
-          <header class="card-header">
-            <p class="card-header-title">
-              Mix inference response
-            </p>
-            <button class="card-header-icon" aria-label="toggle visualization" id="toggle-token-viz">
-              <span class="icon">
-                <i class="fas fa-play" aria-hidden="true" id="toggle-icon"></i>
-              </span>
-            </button>
-            <button class="card-header-icon" aria-label="fast forward" id="fast-forward-btn" style="display: none;">
-              <span class="icon">
-                <i class="fas fa-fast-forward" aria-hidden="true"></i>
-              </span>
-            </button>
-          </header>
-          <div class="card-content" id="token-viz-container" style="display: none;">
+        <div class="content has-text-left math-content" style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 6px; margin-bottom: 2rem;">
+          <div id="mix-inference-heading-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <h3 class="title is-5" style="margin-bottom: 0;">Mix inference response:</h3>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="button is-small" id="play-btn" aria-label="play visualization">
+                <span class="icon is-small"><i class="fas fa-play" aria-hidden="true"></i></span>
+              </button>
+              <button class="button is-small" id="restart-btn" style="display: none;" aria-label="restart visualization">
+                <span class="icon is-small"><i class="fas fa-history" aria-hidden="true"></i></span>
+              </button>
+              <button class="button is-small" id="fast-forward-btn" style="display: none;" aria-label="fast forward">
+                <span class="icon is-small"><i class="fas fa-fast-forward" aria-hidden="true"></i></span>
+              </button>
+            </div>
+          </div>
+          <div id="token-viz-container" style="display: none;">
             <div class="token-display-container">
-              <div class="token-legend">
-                <div class="legend-item">
-                  <div class="legend-color legend-color-small"></div>
-                  <span>Identical (SLM)</span>
+              <div class="legend-instruction-wrapper">
+                <div class="token-legend">
+                  <div class="legend-item">
+                    <div class="legend-color legend-color-small"></div>
+                    <span>Identical (SLM)</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color legend-color-small-diff"></div>
+                    <span>Neural Different (SLM)</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color legend-color-large"></div>
+                    <span>Divergent (LLM)</span>
+                  </div>
                 </div>
-                <div class="legend-item">
-                  <div class="legend-color legend-color-small-diff"></div>
-                  <span>Neural Different (SLM)</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color legend-color-large"></div>
-                  <span>Divergent (LLM)</span>
-                </div>
+                <p class="token-instruction" style="padding: 0.25rem 0; margin: 0;">Hover over blue or red text to see additional information</p>
               </div>
-              <p class="token-instruction">Hover over blue or red text to see additional information</p>
               <div id="token-content" class="token-content"></div>
             </div>
           </div>
@@ -204,73 +209,99 @@
         <!-- Add toggle script -->
         <script>
           document.addEventListener('DOMContentLoaded', function() {
-            const toggleButton = document.getElementById('toggle-token-viz');
-            const tokenVizContainer = document.getElementById('token-viz-container');
-            const toggleIcon = document.getElementById('toggle-icon');
-            const tokenContent = document.getElementById('token-content');
+            const playButton = document.getElementById('play-btn');
+            const restartButton = document.getElementById('restart-btn');
             const fastForwardButton = document.getElementById('fast-forward-btn');
+            const tokenVizContainer = document.getElementById('token-viz-container');
+            const tokenContent = document.getElementById('token-content');
+            const mixInferenceHeadingContainer = document.getElementById('mix-inference-heading-container');
+            
             let animationRunning = false;
             let typeNextTokenTimeout;
-            let allTokens = []; // To store all token elements
+            let allTokens = [];
+            let currentTokenIndex = 0;
 
-            toggleButton.addEventListener('click', function() {
-              if (tokenVizContainer.style.display === 'none') { // Expanding
-                tokenVizContainer.style.display = 'block';
-                toggleIcon.classList.remove('fa-play');
-                toggleIcon.classList.add('fa-angle-up');
+            function resetVisualization() {
+              clearTimeout(typeNextTokenTimeout);
+              animationRunning = false;
+              currentTokenIndex = 0;
+              if (allTokens.length > 0) {
+                allTokens.forEach(token => token.style.display = 'none');
+              }
+              tokenVizContainer.style.display = 'none';
+              mixInferenceHeadingContainer.style.marginBottom = '0.5rem';
+              playButton.style.display = 'block';
+              restartButton.style.display = 'none';
+              fastForwardButton.style.display = 'none';
+            }
 
-                if (tokenContent && tokenContent.children.length > 0 && !animationRunning) {
-                  animationRunning = true;
-                  fastForwardButton.style.display = 'block'; // Show fast-forward button
-                  allTokens = Array.from(tokenContent.children);
-                  
-                  allTokens.forEach(token => {
-                    token.style.display = 'none';
-                  });
-                  
-                  tokenContent.style.display = 'block';
+            function startAnimation() {
+              if (tokenContent && tokenContent.children.length > 0) {
+                allTokens = Array.from(tokenContent.children);
+                allTokens.forEach(token => token.style.display = 'none');
+                currentTokenIndex = 0;
+                animationRunning = true;
+                tokenVizContainer.style.display = 'block'; 
+                mixInferenceHeadingContainer.style.marginBottom = '1.5rem'; 
+                typeNextToken();
+              }
+            }
 
-                  let i = 0;
-                  function typeNextToken() {
-                    if (!animationRunning) return; // Stop if fast-forwarded or collapsed
+            function typeNextToken() {
+              if (!animationRunning) return;
 
-                    if (i < allTokens.length) {
-                      const currentToken = allTokens[i];
-                      currentToken.style.display = 'inline';
-                      
-                      let delay = 50;
-                      if (currentToken.classList.contains('token-type-0') || currentToken.classList.contains('token-type-1')) {
-                        delay = 20;
-                      } else if (currentToken.classList.contains('token-type-2')) {
-                        delay = 250; // User-adjusted delay for red tokens
-                      }
-                      
-                      i++;
-                      typeNextTokenTimeout = setTimeout(typeNextToken, delay);
-                    } else {
-                      animationRunning = false;
-                      fastForwardButton.style.display = 'none'; // Hide button when done
-                    }
-                  }
-                  typeNextToken();
+              if (currentTokenIndex < allTokens.length) {
+                const currentToken = allTokens[currentTokenIndex];
+                currentToken.style.display = 'inline';
+                
+                let delay = 50;
+                if (currentToken.classList.contains('token-type-0') || currentToken.classList.contains('token-type-1')) {
+                  delay = 20;
+                } else if (currentToken.classList.contains('token-type-2')) {
+                  delay = 250;
                 }
-              } else { // Collapsing
-                tokenVizContainer.style.display = 'none';
-                toggleIcon.classList.remove('fa-angle-up');
-                toggleIcon.classList.add('fa-play');
-                clearTimeout(typeNextTokenTimeout);
-                animationRunning = false; 
-                fastForwardButton.style.display = 'none'; // Hide button on collapse
+                
+                currentTokenIndex++;
+                typeNextTokenTimeout = setTimeout(typeNextToken, delay);
+              } else {
+                // Animation finished naturally
+                animationRunning = false; // Crucial: mark animation as not running
+                fastForwardButton.style.display = 'none'; // Hide FF
+                // restartButton remains visible, playButton remains hidden
+              }
+            }
+
+            playButton.addEventListener('click', function() {
+              playButton.style.display = 'none';
+              restartButton.style.display = 'block';
+              fastForwardButton.style.display = 'block';
+              startAnimation();
+            });
+
+            restartButton.addEventListener('click', function() {
+              if (animationRunning) {
+                // Clicked during animation: reset completely
+                resetVisualization();
+              } else {
+                // Clicked after animation finished (or after FF): Replay
+                playButton.style.display = 'none'; // Ensure play is hidden
+                restartButton.style.display = 'block'; // Keep restart visible
+                fastForwardButton.style.display = 'block'; // Show FF again for the replay
+                startAnimation(); // This will reset tokens and start typing
               }
             });
 
             fastForwardButton.addEventListener('click', function() {
               if (animationRunning) {
                 clearTimeout(typeNextTokenTimeout);
-                animationRunning = false;
-                allTokens.forEach(token => token.style.display = 'inline'); // Show all tokens
-                tokenContent.style.display = 'block'; // Ensure parent is visible
-                fastForwardButton.style.display = 'none'; // Hide button after fast-forwarding
+                animationRunning = false; // Mark animation as not running
+                allTokens.forEach((token, index) => {
+                  if (index >= currentTokenIndex) token.style.display = 'inline';
+                });
+                tokenContent.style.display = 'block';
+                
+                fastForwardButton.style.display = 'none'; // Hide FF
+                // restartButton remains visible, playButton remains hidden
               }
             });
           });
@@ -280,6 +311,7 @@
     </div>
   </div>
 </section>
+
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -307,6 +339,11 @@
     </div>
     <!--/ Abstract. -->
 
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
     <!-- Method Overview -->
     <div class="columns is-centered">
       <div class="column is-full-width">
@@ -341,13 +378,6 @@
       </div>
     </div>
     <!--/ Method Overview -->
-
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
     <h2 class="title is-3">Key Observations & Design</h2>
     
     <div class="columns equal-height-columns">

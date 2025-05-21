@@ -72,12 +72,26 @@ function createPopoverElement(token) {
     
     const smallDivergeTitle = document.createElement('div');
     smallDivergeTitle.className = 'popover-title';
-    smallDivergeTitle.textContent = 'Small Model Output:';
+    smallDivergeTitle.textContent = 'SLM Output:';
     smallDivergeSection.appendChild(smallDivergeTitle);
     
     const smallDivergeContent = document.createElement('div');
     smallDivergeContent.className = 'popover-content';
-    smallDivergeContent.textContent = token.small_diverge_text || 'No data';
+    const smallDivergeText = token.small_diverge_text || 'No data';
+    const slmRegex = /^(.*?)<<(.*?)>>(.*?)$/s;
+    const slmMatch = smallDivergeText.match(slmRegex);
+
+    if (slmMatch) {
+        if (slmMatch[1]) smallDivergeContent.appendChild(document.createTextNode(slmMatch[1]));
+        const highlightedWord = document.createElement('span');
+        highlightedWord.textContent = slmMatch[2];
+        highlightedWord.style.color = '#3273dc'; // Blue for SLM
+        highlightedWord.style.fontWeight = 'bold';
+        smallDivergeContent.appendChild(highlightedWord);
+        if (slmMatch[3]) smallDivergeContent.appendChild(document.createTextNode(slmMatch[3]));
+    } else {
+        smallDivergeContent.textContent = smallDivergeText;
+    }
     smallDivergeSection.appendChild(smallDivergeContent);
     
     popover.appendChild(smallDivergeSection);
@@ -90,12 +104,26 @@ function createPopoverElement(token) {
     
     const refDivergeTitle = document.createElement('div');
     refDivergeTitle.className = 'popover-title';
-    refDivergeTitle.textContent = 'Reference Model Output:';
+    refDivergeTitle.textContent = 'LLM Output:';
     refDivergeSection.appendChild(refDivergeTitle);
     
     const refDivergeContent = document.createElement('div');
     refDivergeContent.className = 'popover-content';
-    refDivergeContent.textContent = token.reference_diverge_text || 'No data';
+    const refDivergeText = token.reference_diverge_text || 'No data';
+    const llmRegex = /^(.*?)<<(.*?)>>(.*?)$/s;
+    const llmMatch = refDivergeText.match(llmRegex);
+
+    if (llmMatch) {
+        if (llmMatch[1]) refDivergeContent.appendChild(document.createTextNode(llmMatch[1]));
+        const highlightedWord = document.createElement('span');
+        highlightedWord.textContent = llmMatch[2];
+        highlightedWord.style.color = '#dc3545'; // Red for LLM
+        highlightedWord.style.fontWeight = 'bold';
+        refDivergeContent.appendChild(highlightedWord);
+        if (llmMatch[3]) refDivergeContent.appendChild(document.createTextNode(llmMatch[3]));
+    } else {
+        refDivergeContent.textContent = refDivergeText;
+    }
     refDivergeSection.appendChild(refDivergeContent);
     
     popover.appendChild(refDivergeSection);
@@ -108,7 +136,7 @@ function createPopoverElement(token) {
     
     const judgeTitle = document.createElement('div');
     judgeTitle.className = 'popover-title';
-    judgeTitle.textContent = 'Judge Response:';
+    judgeTitle.textContent = 'Verifier Response:';
     judgeSection.appendChild(judgeTitle);
     
     const judgeContent = document.createElement('div');
@@ -118,8 +146,8 @@ function createPopoverElement(token) {
     const formattedJudgeResponse = formatJudgeResponse(token.judge_response);
     judgeContent.innerHTML = formattedJudgeResponse;
     
-    // Add model tag based on judge response
-    const modelTag = createModelTag(token.judge_response);
+    // Add model tag based on usage_type
+    const modelTag = createModelTag(token);
     if (modelTag) {
       judgeContent.appendChild(modelTag);
     }
@@ -143,16 +171,16 @@ function formatJudgeResponse(response) {
   return formatted;
 }
 
-function createModelTag(judgeResponse) {
-  if (!judgeResponse) return null;
+function createModelTag(token) {
+  if (!token) return null;
   
   const tag = document.createElement('span');
   tag.className = 'model-tag';
   
-  if (judgeResponse.includes('Output: 0') || judgeResponse.includes('Answer (Output: 0)')) {
+  if (token.usage_type === 1) {
     tag.textContent = 'Small Model';
     tag.classList.add('small-model-tag');
-  } else if (judgeResponse.includes('Output: 1') || judgeResponse.includes('Answer (Output: 1)')) {
+  } else if (token.usage_type === 2) {
     tag.textContent = 'Large Model';
     tag.classList.add('large-model-tag');
   } else {
