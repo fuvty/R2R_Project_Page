@@ -103,7 +103,7 @@
           <div class="column has-text-centered">
             <div class="publication-links">
               <!-- PDF Link. -->
-              <span class="link-block">
+              <!-- <span class="link-block">
                 <a href="https://arxiv.org/pdf/2501.01986"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
@@ -111,7 +111,8 @@
                   </span>
                   <span>Paper</span>
                 </a>
-              </span>
+              </span> -->
+              <!-- arXiv Link. -->
               <span class="link-block">
                 <a href="https://arxiv.org/abs/2501.01986"
                    class="external-link button is-normal is-rounded is-dark">
@@ -123,7 +124,7 @@
               </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="YOUR_CODE_LINK_HERE"
+                <a href="https://github.com/thu-nics/R2R"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -188,18 +189,18 @@
                 <div class="token-legend">
                   <div class="legend-item">
                     <div class="legend-color legend-color-small"></div>
-                    <span>Identical (SLM)</span>
+                    <span>Identical (use SLM)</span>
                   </div>
                   <div class="legend-item">
                     <div class="legend-color legend-color-small-diff"></div>
-                    <span>Neural Different (SLM)</span>
+                    <span>Neutral (use SLM)</span>
                   </div>
                   <div class="legend-item">
                     <div class="legend-color legend-color-large"></div>
-                    <span>Divergent (LLM)</span>
+                    <span>Divergent (use LLM)</span>
                   </div>
                 </div>
-                <p class="token-instruction" style="padding: 0.25rem 0; margin: 0;">Hover over blue or red text to see additional information</p>
+                <p class="token-instruction" style="padding: 0.25rem 0; margin: 0;">Hover over blue or red text to see why R2R makes such routing choices.</p>
               </div>
               <div id="token-content" class="token-content"></div>
             </div>
@@ -348,32 +349,42 @@
     <div class="columns is-centered">
       <div class="column is-full-width">
         <h2 class="title is-3">Method Overview</h2>
-        
-        <!-- Method figure -->
-        <div class="columns is-centered">
-          <div class="column is-10">
-            <img src="./static/images/data_gen_overview.png" alt="R2R Method Overview" class="method-figure">
-            <p class="caption">
-              R2R's data labeling pipeline: LLM generates a response. SLM prefills to find different tokens. LLM continues from these points. A verifier labels differences as neutral or divergent.
-            </p>
-          </div>
-        </div>
 
         <div class="content">
-          <h3 class="title is-4">Token-Level Routing with R2R</h3>
+          <h3 class="title is-5">Core idea of R2R</h3>
           <p>
-            The core idea of Roads to Rome (R2R) is to selectively use a large language model (LLM) only for critical, path-divergent tokens, while relying on a more efficient small language model (SLM) for the majority of token generation. This approach aims to minimize computational cost without significantly compromising the quality of the generated output, effectively following the LLM's reasoning path.
+            The core idea of Roads to Rome (R2R) is to selectively use a large language model (LLM) only for critical, path-divergent tokens, while relying on a more efficient small language model (SLM) for the majority of token generation. Essentially, R2R tries to <strong>let the SLM follows LLM reasoning path by correcting only the divergent tokens</strong>.
           </p>
 
           <h4 class="title is-5">Path-Following Routing Strategy</h4>
           <p>
             To achieve this, R2R employs a path-following routing strategy. At each step, it compares SLM and LLM next-token predictions. If identical, the SLM token is used. If different, a continuation-and-verification mechanism determines if the difference is 'neutral' (not affecting the reasoning outcome) or 'divergent' (altering the reasoning path). Divergent tokens are routed to the LLM for correction, ensuring the generation stays aligned with the LLM's intended path. This is formalized by checking if an LLM-based continuation from the SLM's differing token maintains quality compared to an LLM-based continuation from the LLM's token.
           </p>
-
-          <h4 class="title is-5">Data Generation and Router Training</h4>
+          
+          <!-- Routing strategy figure -->
+          <div class="columns is-centered">
+            <div class="column is-10">
+              <img src="./static/images/data_gen_overview.png" alt="R2R Labeling Method" class="method-figure">
+              <p class="caption">
+                R2R's data labeling pipeline: LLM generates a response. SLM prefills to find different tokens. LLM continues from these points. A verifier labels differences as neutral or divergent.
+              </p>
+            </div>
+          </div>
+  
+          <h4 class="title is-5">Router Training and Routing Scheme</h4>
           <p>
-            R2R features an automatic data generation pipeline to create training labels for a lightweight neural router. First, an LLM generates a reference response. Then, an SLM attempts to prefill this path, identifying points of token divergence. For each differing SLM token, the LLM generates a continuation. A verifier model (another capable LLM) then compares these continuations to label the initial difference as 'neutral' or 'divergent'. This labeled data, focusing on sentence-level divergences for efficiency, is used to train a neural router. The router, a small feed-forward network, learns to predict divergence based on SLM logits, token embeddings (capturing frequency biases), and hidden states, enabling immediate routing decisions during inference without needing to wait for LLM verification at each step.
+            The path-following routing strategy generates a large amount of model preference labels for training the router. The router, a small feed-forward network, learns to predict divergence based on SLM logits, token embeddings, and last-layer hidden states, enabling immediate routing decisions during inference.
           </p>
+          
+          <!-- Routing scheme figure -->
+          <div class="columns is-centered">
+            <div class="column is-6">
+              <img src="./static/images/main_method.png" alt="R2R Routing Method" class="method-figure">
+              <p class="caption">
+                R2R uses neural router to inspect SLM outputs at each step, immediately corrects divergent tokens with LLM, then continues generation from the corrected outputs.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -384,7 +395,7 @@
       <!-- Observation 1 -->
       <div class="column">
         <div class="content observation-content">
-          <h3 class="title is-4">Observation 1:<br>Token Divergence Rarity</h3>
+          <h3 class="title is-5">Observation 1:<br>Token Divergence Rarity</h3>
           <div class="observation-image-container">
             <img src="./static/images/distribution.png" alt="Distribution of identical, neutral, and divergent tokens">
           </div>
@@ -405,7 +416,7 @@
       <!-- Observation 2 -->
       <div class="column">
         <div class="content observation-content">
-          <h3 class="title is-4">Observation 2:<br>SLM Entropy as Indicator</h3>
+          <h3 class="title is-5">Observation 2:<br>SLM Entropy as Indicator</h3>
           <div class="observation-image-container">
             <img src="./static/images/entropy_distribution.png" alt="SLM entropy distribution for divergent vs. non-divergent tokens">
           </div>
@@ -426,7 +437,7 @@
       <!-- Observation 3 -->
       <div class="column">
         <div class="content observation-content">
-          <h3 class="title is-4">Observation 3:<br>Token Frequency Matters</h3>
+          <h3 class="title is-5">Observation 3:<br>Token Frequency Matters</h3>
           <div class="observation-image-container">
             <img src="./static/images/token_divergence_frequency.png" alt="Divergence rate vs. token frequency">
           </div>
@@ -450,12 +461,12 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3">Results</h2>
+    <h2 class="title is-3">Experiment Results</h2>
 
     <!-- Performance vs Efficiency Table -->
     <div class="content">
-      <h3 class="title is-4">Performance and Efficiency Comparison (Average over Benchmarks)</h3>
-      <table class="table is-fullwidth is-hoverable no-mathjax">
+      <h3 class="title is-5">Performance and Efficiency Comparisons</h3>
+      <table class="table is-fullwidth is-hoverable">
         <thead>
           <tr>
             <th>Method</th>
@@ -497,14 +508,19 @@
           </tr>
         </tbody>
       </table>
-      <p class="has-text-centered no-mathjax">
-        R2R achieves 4.6$\times$ higher accuracy than R1-1.5B and retains 92% of R1-32B's accuracy, with only 5.6B average activated parameters and significantly lower cost.
+      <p class="has-text-left math-content">
+        By combining the R1-1.5B SLM and the R1-32B LLM, R2R achieves impressive efficiency with only <strong>5.6B</strong> average activated parameters.
       </p>
+      <ul class="math-content">
+        <li>Compared to the SLM baseline, R2R delivers <strong>4.6$\times$</strong> higher accuracy than R1-1.5B.</li>
+        <li>When compared to mid-sized models, R2R achieves <strong>1.5$\times$</strong> speedup with <strong>1.1$\times$</strong> accuracy over R1-14B.</li>
+        <li>Against the full R1-32B LLM, it delivers a <strong>2.8$\times$</strong> end-to-end inference speedup while still reaching 92% of the LLM's accuracy—all while using the LLM for only 11%–15% of generated tokens.</li>
+      </ul>
     </div>
 
     <!-- Scaling Behavior and Speedup -->
     <div class="content">
-      <h3 class="title is-4">Scaling Behavior & Speedup</h3>
+      <h3 class="title is-5">Scaling Behavior</h3>
       <div class="columns is-centered">
         <div class="column is-10">
           <img src="./static/images/all_pareto_subplots_params.png" alt="Accuracy vs. Average Activated Parameters per Token">
@@ -513,37 +529,30 @@
           </p>
         </div>
       </div>
-      <p class="has-text-centered no-mathjax">
-        R2R delivers a <strong>2.8$\times$</strong> wall-clock speedup compared to R1-32B with comparable performance, and <strong>1.6$\times$</strong> speedup over R1-14B.
-      </p>
-    </div>
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3">Visualizing R2R Routing Behavior</h2>
-
-    <div class="content has-text-centered">
-      <p>
-        R2R learns to dynamically allocate LLM usage based on the reasoning process. The following visualization shows the LLM usage rate at different normalized positions within the generation process on the AIME benchmark.
+      <p class="has-text-left math-content">
+        These results demonstrate that R2R effectively balances performance and efficiency, offering substantial computational savings while maintaining high-quality outputs across challenging benchmarks.
       </p>
     </div>
 
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <img src="./static/images/routing_observation.png" alt="LLM usage rate at different positions">
-        <p class="caption has-text-centered">
-         (a) LLM usage across the entire thinking and reply process. (b) LLM usage within each thought segment. R2R routes fewer tokens to LLM during replies and relies more on LLM at the beginning/end of thoughts.
-        </p>
+    <!-- Visualizing Routing Behavior -->
+    <div class="content">
+      <h3 class="title is-5">Visualizing R2R Routing Behavior</h3>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <img src="./static/images/routing_observation.png" alt="LLM usage rate at different positions">
+          <p class="caption has-text-centered">
+           (a) LLM usage across the entire thinking and reply process. (b) LLM usage within each thought segment. R2R routes fewer tokens to LLM during replies and relies more on LLM at the beginning/end of thoughts.
+          </p>
+        </div>
       </div>
-    </div>
-
-    <div class="content has-text-centered">
-      <p>
-        These emergent routing patterns highlight R2R's ability to efficiently allocate computational resources where they are most needed.
+      <p class="has-text-left math-content">
+        Analysis of R2R routing behavior on the AIME benchmark reveals several key insights:
       </p>
+      <ul class="math-content">
+        <li>R2R routes fewer tokens to the LLM during the reply phase compared to the thinking process. It reflects that after deep reasoning, generating the final answer is relatively straightforward.</li>
+        <li>Within individual thought segments, R2R relies more heavily on the LLM at the beginning and end of each thought, where tokens determine reasoning direction and whether to continue, branch, or conclude.</li>
+        <li>These efficient routing patterns <strong>emerge naturally</strong> from the router training process without explicit rules, highlighting R2R's ability to learn efficient resource allocation.</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -552,6 +561,9 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
+    <p>
+      We welcome you to explore our repository and cite our paper if you find the results interesting or useful for your research.
+    </p>
     <pre><code>@article{fu2025r2r,
   title     = {Roads to Rome (R2R): Efficient LLM Inference via Neural Token Routing},
   author    = {Author 1 and Author 2 and Author 3 and Author 4 and Author 5 and Author 6 and Author 7 and Author 8},

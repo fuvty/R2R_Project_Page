@@ -72,7 +72,7 @@ function createPopoverElement(token) {
     
     const smallDivergeTitle = document.createElement('div');
     smallDivergeTitle.className = 'popover-title';
-    smallDivergeTitle.textContent = 'SLM Output:';
+    smallDivergeTitle.textContent = 'SLM Continuation:';
     smallDivergeSection.appendChild(smallDivergeTitle);
     
     const smallDivergeContent = document.createElement('div');
@@ -104,7 +104,7 @@ function createPopoverElement(token) {
     
     const refDivergeTitle = document.createElement('div');
     refDivergeTitle.className = 'popover-title';
-    refDivergeTitle.textContent = 'LLM Output:';
+    refDivergeTitle.textContent = 'LLM Continuation:';
     refDivergeSection.appendChild(refDivergeTitle);
     
     const refDivergeContent = document.createElement('div');
@@ -136,7 +136,7 @@ function createPopoverElement(token) {
     
     const judgeTitle = document.createElement('div');
     judgeTitle.className = 'popover-title';
-    judgeTitle.textContent = 'Verifier Response:';
+    judgeTitle.textContent = 'Verifier Model:';
     judgeSection.appendChild(judgeTitle);
     
     const judgeContent = document.createElement('div');
@@ -178,10 +178,10 @@ function createModelTag(token) {
   tag.className = 'model-tag';
   
   if (token.usage_type === 1) {
-    tag.textContent = 'Small Model';
+    tag.textContent = 'Neutral';
     tag.classList.add('small-model-tag');
   } else if (token.usage_type === 2) {
-    tag.textContent = 'Large Model';
+    tag.textContent = 'Divergent';
     tag.classList.add('large-model-tag');
   } else {
     return null;
