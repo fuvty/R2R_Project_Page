@@ -1230,6 +1230,146 @@
     .scroll-top:hover {
       transform: translateY(-4px);
     }
+
+    /* Related Projects - Apple-inspired horizontal scroll */
+    .related-projects-wrapper {
+      margin-top: 48px;
+      position: relative;
+    }
+
+    .related-projects-scroll {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 0 40px;
+      margin: 0 -24px;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    .related-projects-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .related-projects-scroll::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+    }
+
+    .related-projects-scroll::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+    }
+
+    .related-projects-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .related-project-card {
+      flex: 0 0 220px;
+      scroll-snap-align: start;
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px 28px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .related-project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .related-project-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .related-project-card:hover::before {
+      opacity: 1;
+    }
+
+    .related-project-logo {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      z-index: 1;
+    }
+
+    .related-project-card:hover .related-project-logo {
+      transform: scale(1.15);
+    }
+
+    .related-project-logo img {
+      max-height: 80px;
+      max-width: 80px;
+      height: auto;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .related-project-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--apple-black);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .related-project-desc {
+      font-size: 13px;
+      color: var(--apple-gray);
+      line-height: 1.5;
+      position: relative;
+      z-index: 1;
+    }
+
+    .related-project-link {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--apple-blue);
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .related-project-card:hover .related-project-link {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Center cards on larger screens */
+    @media (min-width: 1200px) {
+      .related-projects-scroll {
+        justify-content: center;
+        overflow-x: visible;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1893,6 +2033,64 @@
   journal={arXiv preprint arXiv:2505.21600},
   year={2025}
 }</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Related Projects Section -->
+<section class="section section-gray">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-eyebrow">More from Us</p>
+      <h2 class="section-title">Related Projects</h2>
+      <p class="section-subtitle">
+        Explore more efficient LLM projects from our team.
+      </p>
+    </div>
+
+    <div class="related-projects-wrapper reveal">
+      <div class="related-projects-scroll">
+        <a href="https://github.com/thu-nics/R2R" class="related-project-card" target="_blank">
+          <div class="related-project-logo">
+            <img src="https://raw.githubusercontent.com/thu-nics/R2R/main/resource/logo.png" alt="R2R Logo" />
+          </div>
+          <div class="related-project-name">R2R</div>
+          <div class="related-project-desc">Token-level routing for reasoning LLMs</div>
+          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
+        </a>
+        <a href="https://github.com/thu-nics/TaH" class="related-project-card" target="_blank">
+          <div class="related-project-logo">
+            <img src="https://raw.githubusercontent.com/thu-nics/TaH/main/resource/logo.png" alt="TaH Logo" />
+          </div>
+          <div class="related-project-name">TaH</div>
+          <div class="related-project-desc">Selective latent thinking for reasoning LLMs</div>
+          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
+        </a>
+        <a href="https://github.com/thu-nics/C2C" class="related-project-card" target="_blank">
+          <div class="related-project-logo">
+            <img src="https://raw.githubusercontent.com/thu-nics/C2C/main/resource/logo.png" alt="C2C Logo" />
+          </div>
+          <div class="related-project-name">C2C</div>
+          <div class="related-project-desc">Communicate through KV-Cache between LLMs</div>
+          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
+        </a>
+        <a href="https://github.com/thu-nics/FrameFusion" class="related-project-card" target="_blank">
+          <div class="related-project-logo">
+            <img src="https://raw.githubusercontent.com/thu-nics/FrameFusion/main/example/image/logo.png" alt="FrameFusion Logo" />
+          </div>
+          <div class="related-project-name">FrF</div>
+          <div class="related-project-desc">Efficient video token reduction for LVLMs</div>
+          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
+        </a>
+        <a href="https://github.com/thu-nics/MoA" class="related-project-card" target="_blank">
+          <div class="related-project-logo">
+            <img src="https://raw.githubusercontent.com/thu-nics/MoA/master/resource/logo.png" alt="MoA Logo" />
+          </div>
+          <div class="related-project-name">MoA</div>
+          <div class="related-project-desc">Mixture of sparse attention for LLMs</div>
+          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
+        </a>
       </div>
     </div>
   </div>
