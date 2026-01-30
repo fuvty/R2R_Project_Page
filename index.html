@@ -333,6 +333,30 @@
       background: var(--apple-blue-hover);
     }
 
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin-left: 8px;
+    }
+
+    .mobile-menu-toggle i {
+      font-size: 18px;
+      color: var(--apple-black);
+      transition: transform 0.3s ease;
+    }
+
+    .mobile-menu-toggle.active i {
+      transform: rotate(90deg);
+    }
+
     /* Responsive nav */
     @media (max-width: 900px) {
       .nav-global-links {
@@ -380,10 +404,10 @@
         grid-template-columns: 1fr;
       }
       .nav-global-links {
-        gap: 16px;
+        gap: 12px;
       }
       .nav-global-links a {
-        font-size: 10px;
+        font-size: 12px;
       }
     }
 
@@ -1370,8 +1394,48 @@
 
     /* Responsive */
     @media (max-width: 768px) {
+      /* Mobile navigation */
       .nav-links {
         display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        background: rgba(251, 251, 253, 0.98);
+        flex-direction: column;
+        padding: 16px 24px;
+        gap: 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+      
+      .nav-links.mobile-open {
+        display: flex;
+      }
+      
+      .nav-links a {
+        padding: 12px 0;
+        font-size: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      
+      .nav-links a:last-child {
+        border-bottom: none;
+      }
+      
+      .nav-links .nav-cta {
+        margin-top: 8px;
+        text-align: center;
+        justify-content: center;
+      }
+      
+      .mobile-menu-toggle {
+        display: flex;
+      }
+      
+      /* Global nav font size increase for mobile */
+      .nav-global-links a {
+        font-size: 13px;
       }
 
       .hero-stats {
@@ -1582,7 +1646,7 @@
         </div>
       </div>
     </div>
-    <div class="nav-links">
+    <div class="nav-links" id="navLinks">
       <a href="#insight">Key Insight</a>
       <a href="#method">Method</a>
       <a href="#demo">Demo</a>
@@ -1591,6 +1655,9 @@
         <i class="fab fa-github"></i> GitHub
       </a>
     </div>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
 </nav>
 
@@ -2696,6 +2763,27 @@ document.addEventListener('DOMContentLoaded', () => {
       navLogoWrapper.classList.remove('open');
     }
   });
+
+  // Mobile menu toggle
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  const navLinks = document.getElementById('navLinks');
+  
+  if (mobileMenuToggle && navLinks) {
+    mobileMenuToggle.addEventListener('click', () => {
+      mobileMenuToggle.classList.toggle('active');
+      navLinks.classList.toggle('mobile-open');
+    });
+    
+    // Close mobile menu when clicking a link
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          mobileMenuToggle.classList.remove('active');
+          navLinks.classList.remove('mobile-open');
+        }
+      });
+    });
+  }
 });
 </script>
 
