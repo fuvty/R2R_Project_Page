@@ -304,6 +304,39 @@
       color: rgba(255, 255, 255, 0.7);
     }
 
+    /* Apple-style text highlighting */
+    .text-highlight {
+      color: var(--apple-black);
+    }
+
+    .text-highlight-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-dark .text-highlight,
+    .section-dark .text-highlight-white {
+      color: #fff;
+    }
+
+    .section-dark .text-highlight-gradient {
+      background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Muted text for contrast */
+    .text-muted {
+      color: var(--apple-gray);
+    }
+
+    .section-dark .text-muted {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
     /* The Problem Section */
     .problem-visual {
       margin: 60px 0;
@@ -802,9 +835,21 @@
     /* Results Section */
     .results-comparison {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 24px;
       margin-top: 48px;
+    }
+
+    @media (max-width: 1024px) {
+      .results-comparison {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .results-comparison {
+        grid-template-columns: 1fr;
+      }
     }
 
     .result-card {
@@ -1214,9 +1259,7 @@
   <h1 class="hero-title">
     <span>Roads to Rome</span>
   </h1>
-  <p class="hero-subtitle">
-    Efficient LLM reasoning through intelligent token-level routing.
-    Let small models follow large models' reasoning paths by correcting only the critical tokens.
+  <p class="hero-subtitle">Efficiently Navigating Divergent Reasoning Paths with Small-Large Model Token Routing. Let small models follow large models' reasoning paths by correcting only the divergent tokens.
   </p>
 
   <div class="hero-stats">
@@ -1268,7 +1311,7 @@
       <div class="problem-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff;">
         <div class="problem-box-icon">⚡</div>
         <h4>R2R Routing</h4>
-        <p>Best of both worlds<br>Smart token routing</p>
+        <p style="color: #fff;">Best of both worlds<br>Smart token routing</p>
       </div>
       <div class="arrow-icon">→</div>
       <div class="problem-box">
@@ -1818,7 +1861,7 @@
 </section>
 
 <!-- Citation Section -->
-<section class="section section-gray">
+<section class="section">
   <div class="container">
     <div class="reveal">
       <p class="section-eyebrow">Citation</p>
