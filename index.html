@@ -561,15 +561,15 @@
     /* Token Tooltips */
     .token-tooltip {
       position: absolute;
-      bottom: calc(100% + 12px);
+      top: calc(100% + 12px);
       left: 50%;
       transform: translateX(-50%) scale(0.95);
       width: 340px;
       padding: 16px;
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(0, 0, 0, 0.08);
       opacity: 0;
       visibility: hidden;
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -578,25 +578,39 @@
       line-height: 1.5;
       color: var(--apple-black);
       text-align: left;
+      pointer-events: none;
     }
 
-    .token-tooltip::after {
+    .token-tooltip::before {
       content: '';
       position: absolute;
-      bottom: -8px;
+      top: -8px;
       left: 50%;
       transform: translateX(-50%) rotate(45deg);
       width: 14px;
       height: 14px;
       background: #fff;
-      border-right: 1px solid rgba(0, 0, 0, 0.06);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      border-left: 1px solid rgba(0, 0, 0, 0.08);
     }
 
     .token:hover .token-tooltip {
       opacity: 1;
       visibility: visible;
       transform: translateX(-50%) scale(1);
+    }
+
+    /* Ensure workflow container doesn't clip tooltips */
+    .workflow-visualization {
+      overflow: visible !important;
+    }
+
+    .workflow-step-content {
+      overflow: visible;
+    }
+
+    .token-stream {
+      overflow: visible;
     }
 
     .tooltip-section {
@@ -966,29 +980,27 @@
 
     /* BibTeX */
     .bibtex-container {
-      background: var(--apple-light-gray);
-      border-radius: 16px;
-      padding: 24px;
-      margin-top: 32px;
-      position: relative;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 0;
+      border: 1px solid rgba(0, 0, 0, 0.08);
     }
 
     .bibtex-container pre {
       font-family: 'SF Mono', Monaco, 'Courier New', monospace;
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.6;
       overflow-x: auto;
       margin: 0;
+      color: var(--apple-black);
     }
 
     .copy-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
       padding: 8px 16px;
       border-radius: 8px;
       border: none;
-      background: #fff;
+      background: var(--apple-light-gray);
       color: var(--apple-black);
       font-size: 12px;
       font-weight: 500;
@@ -1199,21 +1211,21 @@
   </h1>
   <p class="hero-subtitle">
     Efficient LLM reasoning through intelligent token-level routing.
-    Let small models follow large model reasoning paths by correcting only the critical tokens.
+    Let small models follow large models' reasoning paths by correcting only the critical tokens.
   </p>
 
   <div class="hero-stats">
     <div class="stat-item">
       <div class="stat-value">2.8×</div>
-      <div class="stat-label">Faster than R1-32B</div>
+      <div class="stat-label">Speedup vs R1-32B</div>
     </div>
     <div class="stat-item">
       <div class="stat-value">5.6B</div>
-      <div class="stat-label">Avg. Parameters</div>
+      <div class="stat-label">Avg. Activated Params</div>
     </div>
     <div class="stat-item">
-      <div class="stat-value">92%</div>
-      <div class="stat-label">LLM Accuracy Retained</div>
+      <div class="stat-value">1.6×</div>
+      <div class="stat-label">Accuracy vs R1-7B</div>
     </div>
   </div>
 
@@ -1380,19 +1392,20 @@
       <div class="workflow-visualization" id="workflowViz">
         <div class="workflow-step-content active" data-step="0">
           <div style="text-align: center; padding: 40px 0;">
-            <div style="font-size: 18px; font-weight: 500; margin-bottom: 16px;">Math Problem</div>
-            <div style="background: #fff; padding: 24px; border-radius: 12px; max-width: 600px; margin: 0 auto; font-size: 15px; line-height: 1.6;">
-              Every morning Aya walks 9 km at speed <em>s</em> km/h, taking 4 hours including <em>t</em> minutes at a coffee shop. At speed <em>s+2</em> km/h, it takes 2 hours 24 minutes. Find the time at speed <em>s+½</em> km/h.
+            <div style="font-size: 18px; font-weight: 500; margin-bottom: 16px;">AIME 2024 Problem I-1</div>
+            <div style="background: #fff; padding: 24px; border-radius: 12px; max-width: 700px; margin: 0 auto; font-size: 15px; line-height: 1.6; text-align: left;">
+              Every morning Aya goes for a 9-kilometer-long walk and stops at a coffee shop afterwards. When she walks at a constant speed of <em>s</em> kilometers per hour, the entire walk takes exactly 4 hours, including <em>t</em> minutes spent at the coffee shop. When she walks at a constant speed of <em>s + 2</em> kilometers per hour, the entire walk takes exactly 2 hours and 24 minutes, including <em>t</em> minutes spent at the coffee shop. Suppose Aya walks at <em>s + ½</em> kilometers per hour. Find the number of minutes the entire walk takes, including the <em>t</em> minutes spent at the coffee shop.
             </div>
             <div style="margin-top: 24px; color: var(--apple-gray); font-size: 14px;">
-              Click play to see R2R process this problem →
+              <i class="fas fa-play-circle" style="margin-right: 6px;"></i>
+              Click the play button above to see R2R process this problem
             </div>
           </div>
         </div>
 
         <div class="workflow-step-content" data-step="1">
           <div style="text-align: center; padding: 20px 0;">
-            <div style="font-size: 16px; font-weight: 500; margin-bottom: 20px;">Small Model (1.5B) generates tokens...</div>
+            <div style="font-size: 16px; font-weight: 500; margin-bottom: 20px;">Small Model (R1-1.5B) generates tokens...</div>
             <div class="token-stream" id="tokenStream" style="justify-content: center;">
               <!-- Tokens will be inserted here by JavaScript -->
             </div>
@@ -1402,9 +1415,9 @@
         <div class="workflow-step-content" data-step="2">
           <div style="text-align: center; padding: 40px 0;">
             <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
-            <div style="font-size: 18px; font-weight: 500; margin-bottom: 12px;">Router Analyzing Token</div>
-            <div style="font-size: 14px; color: var(--apple-gray); max-width: 400px; margin: 0 auto;">
-              The lightweight neural router examines SLM logits, token embeddings, and hidden states to determine if this token would diverge the reasoning path.
+            <div style="font-size: 18px; font-weight: 500; margin-bottom: 12px;">Neural Router Analyzing Token</div>
+            <div style="font-size: 14px; color: var(--apple-gray); max-width: 500px; margin: 0 auto; line-height: 1.6;">
+              The 56M-parameter neural router examines three features from the SLM: <strong>top-100 logits</strong> (prediction uncertainty), <strong>token embeddings</strong> (frequency bias), and <strong>hidden states</strong> (semantic context) to predict if this token would diverge the reasoning path.
             </div>
           </div>
         </div>
@@ -1471,7 +1484,7 @@
       <p class="section-eyebrow">How It Works</p>
       <h2 class="section-title">Intelligent token routing.</h2>
       <p class="section-subtitle">
-        R2R uses a lightweight neural router to decide which tokens need the large model's attention.
+        R2R uses a lightweight neural router trained on automatically generated token-level labels to decide which tokens need the large model's attention.
       </p>
     </div>
 
@@ -1481,6 +1494,34 @@
 
     <!-- Expandable Method Details -->
     <div class="reveal">
+      <div class="expandable-section">
+        <div class="expandable-header" onclick="toggleExpand(this)">
+          <span class="expandable-title">Automatic Data Generation Pipeline</span>
+          <div class="expandable-icon">
+            <i class="fas fa-plus" style="font-size: 12px;"></i>
+          </div>
+        </div>
+        <div class="expandable-content">
+          <div class="expandable-content-inner">
+            <div class="expandable-inner">
+              <p style="margin-bottom: 16px;">
+                A key contribution of R2R is an <strong>automatic pipeline for generating token-level routing labels</strong> without expensive human annotation:
+              </p>
+              <ol style="margin-left: 24px; margin-bottom: 16px; color: var(--apple-gray); line-height: 1.8;">
+                <li><strong>LLM generates</strong> a complete response to the problem</li>
+                <li><strong>SLM prefills</strong> the LLM's response to identify tokens where predictions differ</li>
+                <li><strong>LLM continues</strong> from each differing token to produce alternative continuations</li>
+                <li><strong>Verifier model</strong> compares continuations to label differences as neutral or divergent</li>
+              </ol>
+              <p style="margin-bottom: 16px;">
+                This pipeline produces large-scale training data automatically, enabling the router to learn which token differences actually matter for reasoning.
+              </p>
+              <img src="./static/images/data_gen_overview.png" alt="Data Generation Pipeline" style="width: 100%; border-radius: 12px; margin-top: 16px;">
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="expandable-section">
         <div class="expandable-header" onclick="toggleExpand(this)">
           <span class="expandable-title">Path-Following Routing Strategy</span>
@@ -1498,7 +1539,9 @@
                 <li><strong>Neutral:</strong> Doesn't affect reasoning outcomes (use SLM)</li>
                 <li><strong>Divergent:</strong> Alters the reasoning path (route to LLM)</li>
               </ul>
-              <img src="./static/images/data_gen_overview.png" alt="Data Generation Pipeline" style="width: 100%; border-radius: 12px; margin-top: 16px;">
+              <p>
+                The core insight is that the SLM can follow the LLM's reasoning path if we correct only the divergent tokens—the SLM then continues from the corrected token without further intervention until the next divergent token.
+              </p>
             </div>
           </div>
         </div>
@@ -1515,15 +1558,15 @@
           <div class="expandable-content-inner">
             <div class="expandable-inner">
               <p style="margin-bottom: 16px;">
-                The router is a lightweight 56M-parameter feed-forward network that takes three inputs from the SLM:
+                The router is a lightweight <strong>56M-parameter feed-forward network</strong> that takes three inputs from the SLM:
               </p>
               <ul style="margin-left: 24px; color: var(--apple-gray);">
-                <li><strong>Top-100 SLM logits:</strong> Captures prediction uncertainty</li>
-                <li><strong>Token embeddings:</strong> Encodes token frequency biases</li>
-                <li><strong>Last-layer hidden states:</strong> Provides semantic context</li>
+                <li><strong>Top-100 SLM logits:</strong> Captures prediction uncertainty (higher entropy indicates potential divergence)</li>
+                <li><strong>Token embeddings:</strong> Encodes token frequency biases (rare tokens are more likely to diverge)</li>
+                <li><strong>Last-layer hidden states:</strong> Provides semantic context for the current generation step</li>
               </ul>
               <p style="margin-top: 16px;">
-                The router outputs a binary classification probability indicating whether the current token diverges from the LLM's reasoning path.
+                The router outputs a binary classification probability indicating whether the current token diverges from the LLM's reasoning path. This enables <strong>immediate routing decisions</strong> during inference without waiting for continuation verification.
               </p>
             </div>
           </div>
@@ -1567,28 +1610,28 @@
       <p class="section-eyebrow">Performance</p>
       <h2 class="section-title">State-of-the-art efficiency.</h2>
       <p class="section-subtitle">
-        R2R advances the Pareto frontier of test-time scaling efficiency across challenging benchmarks.
+        R2R advances the Pareto frontier of test-time scaling efficiency across AIME, GPQA, and LiveCodeBench.
       </p>
     </div>
 
     <div class="results-comparison reveal">
       <div class="result-card">
-        <div class="result-method">Baseline SLM</div>
-        <div class="result-value">10%</div>
+        <div class="result-method">R1-7B (Baseline)</div>
+        <div class="result-value">28%</div>
         <div class="result-label">Average Accuracy</div>
         <div class="result-metrics">
-          <div class="result-metric"><strong>1.5B</strong> params</div>
-          <div class="result-metric"><strong>42</strong> cost</div>
+          <div class="result-metric"><strong>7.0B</strong> params</div>
+          <div class="result-metric"><strong>154K</strong> cost*</div>
         </div>
       </div>
 
       <div class="result-card">
-        <div class="result-method">Distilled R1-14B</div>
+        <div class="result-method">R1-14B</div>
         <div class="result-value">43%</div>
         <div class="result-label">Average Accuracy</div>
         <div class="result-metrics">
           <div class="result-metric"><strong>14B</strong> params</div>
-          <div class="result-metric"><strong>234</strong> cost</div>
+          <div class="result-metric"><strong>234K</strong> cost*</div>
         </div>
       </div>
 
@@ -1597,21 +1640,25 @@
         <div class="result-value">46%</div>
         <div class="result-label">Average Accuracy</div>
         <div class="result-metrics">
-          <div class="result-metric"><strong>5.6B</strong> params</div>
-          <div class="result-metric"><strong>103</strong> cost</div>
+          <div class="result-metric"><strong>5.6B</strong> avg params</div>
+          <div class="result-metric"><strong>103K</strong> cost*</div>
         </div>
       </div>
 
       <div class="result-card">
-        <div class="result-method">Full R1-32B</div>
+        <div class="result-method">R1-32B (LLM)</div>
         <div class="result-value">50%</div>
         <div class="result-label">Average Accuracy</div>
         <div class="result-metrics">
           <div class="result-metric"><strong>32B</strong> params</div>
-          <div class="result-metric"><strong>537</strong> cost</div>
+          <div class="result-metric"><strong>537K</strong> cost*</div>
         </div>
       </div>
     </div>
+
+    <p style="text-align: center; color: var(--apple-gray); font-size: 12px; margin-top: 16px;">
+      *Cost = output tokens × activated parameters (in billions). Lower is better.
+    </p>
 
     <div class="chart-container reveal">
       <img src="./static/images/all_pareto_subplots_params.png" alt="Pareto Frontier Chart">
@@ -1722,8 +1769,8 @@
       <a href="https://nicsefc.ee.tsinghua.edu.cn/people/TianyuFu" class="author-tag" target="_blank">
         Tianyu Fu<sup>1,2*</sup>
       </a>
-      <span class="author-tag">Yi Ge<sup>1*</sup></span>
-      <span class="author-tag">Yichen You<sup>1</sup></span>
+      <span class="author-tag" style="cursor: default;">Yi Ge<sup>1*</sup></span>
+      <span class="author-tag" style="cursor: default;">Yichen You<sup>1</sup></span>
       <a href="https://nicsefc.ee.tsinghua.edu.cn/people/EnshuLiu" class="author-tag" target="_blank">
         Enshu Liu<sup>1</sup>
       </a>
@@ -1733,8 +1780,8 @@
       <a href="https://dai.sjtu.edu.cn/pepledetail.html?id=218" class="author-tag" target="_blank">
         Guohao Dai<sup>3,2</sup>
       </a>
-      <span class="author-tag">Shengen Yan<sup>2</sup></span>
-      <span class="author-tag">Huazhong Yang<sup>1</sup></span>
+      <span class="author-tag" style="cursor: default;">Shengen Yan<sup>2</sup></span>
+      <span class="author-tag" style="cursor: default;">Huazhong Yang<sup>1</sup></span>
       <a href="https://nicsefc.ee.tsinghua.edu.cn/people/YuWang" class="author-tag" target="_blank">
         Yu Wang<sup>1</sup>
       </a>
@@ -1750,7 +1797,7 @@
 </section>
 
 <!-- Citation Section -->
-<section class="section">
+<section class="section section-gray">
   <div class="container">
     <div class="reveal">
       <p class="section-eyebrow">Citation</p>
@@ -1760,11 +1807,18 @@
       </p>
     </div>
 
-    <div class="bibtex-container reveal">
-      <button class="copy-btn" onclick="copyBibtex()">
-        <i class="fas fa-copy"></i> Copy
-      </button>
-      <pre><code id="bibtexCode">@article{fu2025r2r,
+    <div class="reveal" style="margin-top: 32px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <span style="font-size: 14px; font-weight: 600; color: var(--apple-black);">
+          <i class="fas fa-quote-left" style="margin-right: 8px; color: var(--apple-gray);"></i>
+          BibTeX
+        </span>
+        <button class="copy-btn" onclick="copyBibtex()" style="position: static;">
+          <i class="fas fa-copy"></i> Copy BibTeX
+        </button>
+      </div>
+      <div class="bibtex-container" style="margin-top: 0;">
+        <pre><code id="bibtexCode">@article{fu2025r2r,
   title={R2R: Efficiently Navigating Divergent Reasoning Paths
          with Small-Large Model Token Routing},
   author={Tianyu Fu and Yi Ge and Yichen You and Enshu Liu and
@@ -1773,6 +1827,7 @@
   journal={arXiv preprint arXiv:2505.21600},
   year={2025}
 }</code></pre>
+      </div>
     </div>
   </div>
 </section>
@@ -2013,6 +2068,9 @@ function startWorkflow() {
   document.getElementById('playBtn').disabled = true;
   document.getElementById('pauseBtn').disabled = false;
 
+  // Find index of first divergent (red/llm) token
+  const firstDivergentIndex = sampleTokens.findIndex(t => t.type === 'llm');
+
   // Animate through stages
   let tokenIndex = 0;
   const tokenStream = document.getElementById('tokenStream');
@@ -2025,19 +2083,29 @@ function startWorkflow() {
       setActiveStage(currentStage + 1);
 
       if (currentStage === 1) {
-        // Token generation animation
+        // Token generation animation - stop at first red token
         tokenStream.innerHTML = '';
         const interval = setInterval(() => {
-          if (tokenIndex < sampleTokens.length && isPlaying) {
+          if (tokenIndex <= firstDivergentIndex && isPlaying) {
             const token = sampleTokens[tokenIndex];
             const span = createTokenElement(token);
+            // Highlight the divergent token when we reach it
+            if (tokenIndex === firstDivergentIndex) {
+              span.classList.add('token-highlight');
+            }
             tokenStream.appendChild(span);
             tokenIndex++;
+
+            // Stop at the first divergent token
+            if (tokenIndex > firstDivergentIndex) {
+              clearInterval(interval);
+              if (isPlaying) setTimeout(animateStage, 1200);
+            }
           } else {
             clearInterval(interval);
             if (isPlaying) setTimeout(animateStage, 1000);
           }
-        }, 100);
+        }, 120);
         return;
       }
 
@@ -2054,7 +2122,7 @@ function startWorkflow() {
         return;
       }
 
-      setTimeout(animateStage, 1500);
+      setTimeout(animateStage, 1800);
     }
   }
 
