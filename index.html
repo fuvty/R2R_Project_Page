@@ -60,18 +60,105 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Navigation */
-    .nav {
+    /* Global Navigation (Apple-style with projects) */
+    .nav-global {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 48px;
-      background: rgba(251, 251, 253, 0.8);
+      height: 44px;
+      background: rgba(251, 251, 253, 0.92);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      z-index: 10000;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-global.hidden {
+      transform: translateY(-100%);
+      pointer-events: none;
+    }
+
+    .nav-global-content {
+      max-width: var(--max-width-wide);
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 22px;
+      position: relative;
+    }
+
+    .nav-global-logo {
+      height: 20px;
+      width: auto;
+      opacity: 0.9;
+      transition: opacity 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .nav-global-logo:hover {
+      opacity: 1;
+    }
+
+    .nav-global-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-global-links a {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--apple-black);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-global-links a:hover {
+      opacity: 1;
+    }
+
+    .nav-global-links a.active {
+      opacity: 1;
+      font-weight: 500;
+    }
+
+    /* Local Navigation (Project-specific) */
+    .nav {
+      position: fixed;
+      top: 44px;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: rgba(251, 251, 253, 0.95);
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       z-index: 9999;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, box-shadow 0.3s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .nav.nav-visible {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .nav.nav-sticky {
+      top: 0;
+      background: rgba(251, 251, 253, 0.98);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
     }
 
     .nav-content {
@@ -84,12 +171,134 @@
       padding: 0 22px;
     }
 
+    /* Project switcher dropdown */
+    .nav-logo-wrapper {
+      position: relative;
+    }
+
     .nav-logo {
       font-size: 21px;
       font-weight: 600;
       color: var(--apple-black);
       text-decoration: none;
       letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 0;
+    }
+
+    .nav-logo-chevron {
+      font-size: 10px;
+      opacity: 0.5;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .nav-logo-wrapper:hover .nav-logo-chevron {
+      opacity: 0.8;
+    }
+
+    .nav-logo-wrapper.open .nav-logo-chevron {
+      transform: rotate(180deg);
+      opacity: 1;
+    }
+
+    /* Dropdown menu */
+    .nav-dropdown {
+      position: absolute;
+      top: 100%;
+      left: -20px;
+      width: 580px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10001;
+    }
+
+    .nav-logo-wrapper:hover .nav-dropdown,
+    .nav-logo-wrapper.open .nav-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(8px);
+    }
+
+    .nav-dropdown-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--apple-gray);
+      padding: 4px 12px 12px;
+    }
+
+    .nav-dropdown-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .nav-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: background 0.2s ease;
+    }
+
+    .nav-dropdown-item:hover {
+      background: var(--apple-light-gray);
+    }
+
+    .nav-dropdown-item.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    }
+
+    .nav-dropdown-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--apple-light-gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .nav-dropdown-icon img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .nav-dropdown-item:hover .nav-dropdown-icon img {
+      transform: scale(1.15);
+    }
+
+    .nav-dropdown-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .nav-dropdown-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--apple-black);
+      margin-bottom: 3px;
+    }
+
+    .nav-dropdown-desc {
+      font-size: 11px;
+      color: var(--apple-gray);
+      line-height: 1.35;
     }
 
     .nav-links {
@@ -124,6 +333,60 @@
       background: var(--apple-blue-hover);
     }
 
+    /* Responsive nav */
+    @media (max-width: 900px) {
+      .nav-global-links {
+        gap: 20px;
+      }
+      .nav-global-links a {
+        font-size: 11px;
+      }
+      .nav-dropdown {
+        width: 420px;
+        left: -10px;
+      }
+      .nav-dropdown-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .nav-global-content {
+        justify-content: center;
+      }
+      .nav-global-logo {
+        display: none;
+      }
+      .nav-global-links {
+        position: static;
+        transform: none;
+      }
+      .nav-dropdown {
+        width: calc(100vw - 48px);
+        left: 50%;
+        transform: translateX(-50%) translateY(-10px);
+      }
+      .nav-logo-wrapper:hover .nav-dropdown,
+      .nav-logo-wrapper.open .nav-dropdown {
+        transform: translateX(-50%) translateY(8px);
+      }
+      .nav-dropdown-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav-dropdown-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-global-links {
+        gap: 16px;
+      }
+      .nav-global-links a {
+        font-size: 10px;
+      }
+    }
+
     /* Hero Section */
     .hero {
       min-height: 100vh;
@@ -132,37 +395,45 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 120px 24px 80px;
+      padding: 100px 24px 80px;
       background: linear-gradient(180deg, #fff 0%, var(--apple-light-gray) 100%);
       position: relative;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      padding: 8px 20px;
+      background: transparent;
+      color: var(--apple-blue);
+      border: 1px solid var(--apple-blue);
+      padding: 16px 32px;
       border-radius: 980px;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 24px;
-      animation: fadeInUp 0.8s ease-out;
+      font-size: 17px;
+      font-weight: 400;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .hero-badge:hover {
+      background: var(--apple-blue);
+      color: #fff;
     }
 
     .hero-title {
       font-size: clamp(48px, 8vw, 96px);
       font-weight: 700;
-      line-height: 1.05;
+      line-height: 1.1;
       letter-spacing: -0.045em;
       margin-bottom: 16px;
+      padding: 0 10px;
       animation: fadeInUp 0.8s ease-out 0.1s backwards;
     }
 
     .hero-title span {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding-right: 0.05em;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -1231,153 +1502,86 @@
       transform: translateY(-4px);
     }
 
-    /* Related Projects - Apple-inspired horizontal scroll */
-    .related-projects-wrapper {
-      margin-top: 48px;
-      position: relative;
-    }
-
-    .related-projects-scroll {
-      display: flex;
-      gap: 20px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      padding: 20px 0 40px;
-      margin: 0 -24px;
-      padding-left: 24px;
-      padding-right: 24px;
-    }
-
-    .related-projects-scroll::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .related-projects-scroll::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 4px;
-    }
-
-    .related-projects-scroll::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.15);
-      border-radius: 4px;
-    }
-
-    .related-projects-scroll::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 0, 0, 0.25);
-    }
-
-    .related-project-card {
-      flex: 0 0 220px;
-      scroll-snap-align: start;
-      background: #fff;
-      border-radius: 24px;
-      padding: 40px 28px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .related-project-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    .related-project-card:hover {
-      transform: translateY(-12px) scale(1.02);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    }
-
-    .related-project-card:hover::before {
-      opacity: 1;
-    }
-
-    .related-project-logo {
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      position: relative;
-      z-index: 1;
-    }
-
-    .related-project-card:hover .related-project-logo {
-      transform: scale(1.15);
-    }
-
-    .related-project-logo img {
-      max-height: 80px;
-      max-width: 80px;
-      height: auto;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .related-project-name {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--apple-black);
-      margin-bottom: 8px;
-      letter-spacing: -0.01em;
-      position: relative;
-      z-index: 1;
-    }
-
-    .related-project-desc {
-      font-size: 13px;
-      color: var(--apple-gray);
-      line-height: 1.5;
-      position: relative;
-      z-index: 1;
-    }
-
-    .related-project-link {
-      margin-top: 16px;
-      font-size: 14px;
-      color: var(--apple-blue);
-      font-weight: 500;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.3s ease;
-      position: relative;
-      z-index: 1;
-    }
-
-    .related-project-card:hover .related-project-link {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Center cards on larger screens */
-    @media (min-width: 1200px) {
-      .related-projects-scroll {
-        justify-content: center;
-        overflow-x: visible;
-      }
-    }
   </style>
 </head>
 <body>
 
-<!-- Navigation -->
-<nav class="nav">
+<!-- Global Navigation (Related Projects) -->
+<nav class="nav-global" id="navGlobal">
+  <div class="nav-global-content">
+    <a href="#">
+      <img src="./static/images/page_logo.png" alt="NICS-EFC" class="nav-global-logo" />
+    </a>
+    <div class="nav-global-links">
+      <a href="https://github.com/thu-nics/R2R" class="active">R2R</a>
+      <a href="https://github.com/thu-nics/TaH" target="_blank">TaH</a>
+      <a href="https://fuvty.github.io/C2C_Project_Page/" target="_blank">C2C</a>
+      <a href="https://github.com/thu-nics/FrameFusion" target="_blank">FrameFusion</a>
+      <a href="https://github.com/thu-nics/MoA" target="_blank">MoA</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Local Navigation (R2R-specific) -->
+<nav class="nav" id="navLocal">
   <div class="nav-content">
-    <a href="#" class="nav-logo">R2R</a>
+    <div class="nav-logo-wrapper" id="navLogoWrapper">
+      <a href="#" class="nav-logo">
+        R2R
+        <i class="fas fa-chevron-down nav-logo-chevron"></i>
+      </a>
+      <!-- Project Switcher Dropdown -->
+      <div class="nav-dropdown">
+        <div class="nav-dropdown-title">Explore Projects</div>
+        <div class="nav-dropdown-grid">
+          <a href="https://github.com/thu-nics/R2R" class="nav-dropdown-item active">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/R2R/main/resource/logo.png" alt="R2R" />
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">R2R</div>
+              <div class="nav-dropdown-desc">Token-level routing for reasoning LLMs</div>
+            </div>
+          </a>
+          <a href="https://github.com/thu-nics/TaH" class="nav-dropdown-item" target="_blank">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/TaH/main/resource/logo.png" alt="TaH" />
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">TaH</div>
+              <div class="nav-dropdown-desc">Selective latent thinking for reasoning LLMs</div>
+            </div>
+          </a>
+          <a href="https://fuvty.github.io/C2C_Project_Page/" class="nav-dropdown-item" target="_blank">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/C2C/main/resource/logo.png" alt="C2C" />
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">C2C</div>
+              <div class="nav-dropdown-desc">Communicate through KV-Cache between LLMs</div>
+            </div>
+          </a>
+          <a href="https://github.com/thu-nics/FrameFusion" class="nav-dropdown-item" target="_blank">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/FrameFusion/main/example/image/logo.png" alt="FrameFusion" />
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">FrF</div>
+              <div class="nav-dropdown-desc">Efficient video token reduction for LVLMs</div>
+            </div>
+          </a>
+          <a href="https://github.com/thu-nics/MoA" class="nav-dropdown-item" target="_blank">
+            <div class="nav-dropdown-icon">
+              <img src="https://raw.githubusercontent.com/thu-nics/MoA/master/resource/logo.png" alt="MoA" />
+            </div>
+            <div class="nav-dropdown-text">
+              <div class="nav-dropdown-name">MoA</div>
+              <div class="nav-dropdown-desc">Mixture of sparse attention for LLMs</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
     <div class="nav-links">
       <a href="#insight">Key Insight</a>
       <a href="#method">Method</a>
@@ -1392,10 +1596,6 @@
 
 <!-- Hero Section -->
 <section class="hero">
-  <div class="hero-badge">
-    <i class="fas fa-award"></i>
-    NeurIPS 2025
-  </div>
   <h1 class="hero-title">
     <span>Roads to Rome</span>
   </h1>
@@ -1427,6 +1627,10 @@
     <a href="https://huggingface.co/nics-efc/R2R_router_collections" class="btn btn-secondary" target="_blank">
       🤗 Models
     </a>
+    <span class="hero-badge">
+      <i class="fas fa-award"></i>
+      NeurIPS 2025
+    </span>
   </div>
 </section>
 
@@ -2038,64 +2242,6 @@
   </div>
 </section>
 
-<!-- Related Projects Section -->
-<section class="section section-gray">
-  <div class="container">
-    <div class="reveal">
-      <p class="section-eyebrow">More from Us</p>
-      <h2 class="section-title">Related Projects</h2>
-      <p class="section-subtitle">
-        Explore more efficient LLM projects from our team.
-      </p>
-    </div>
-
-    <div class="related-projects-wrapper reveal">
-      <div class="related-projects-scroll">
-        <a href="https://github.com/thu-nics/R2R" class="related-project-card" target="_blank">
-          <div class="related-project-logo">
-            <img src="https://raw.githubusercontent.com/thu-nics/R2R/main/resource/logo.png" alt="R2R Logo" />
-          </div>
-          <div class="related-project-name">R2R</div>
-          <div class="related-project-desc">Token-level routing for reasoning LLMs</div>
-          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
-        </a>
-        <a href="https://github.com/thu-nics/TaH" class="related-project-card" target="_blank">
-          <div class="related-project-logo">
-            <img src="https://raw.githubusercontent.com/thu-nics/TaH/main/resource/logo.png" alt="TaH Logo" />
-          </div>
-          <div class="related-project-name">TaH</div>
-          <div class="related-project-desc">Selective latent thinking for reasoning LLMs</div>
-          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
-        </a>
-        <a href="https://github.com/thu-nics/C2C" class="related-project-card" target="_blank">
-          <div class="related-project-logo">
-            <img src="https://raw.githubusercontent.com/thu-nics/C2C/main/resource/logo.png" alt="C2C Logo" />
-          </div>
-          <div class="related-project-name">C2C</div>
-          <div class="related-project-desc">Communicate through KV-Cache between LLMs</div>
-          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
-        </a>
-        <a href="https://github.com/thu-nics/FrameFusion" class="related-project-card" target="_blank">
-          <div class="related-project-logo">
-            <img src="https://raw.githubusercontent.com/thu-nics/FrameFusion/main/example/image/logo.png" alt="FrameFusion Logo" />
-          </div>
-          <div class="related-project-name">FrF</div>
-          <div class="related-project-desc">Efficient video token reduction for LVLMs</div>
-          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
-        </a>
-        <a href="https://github.com/thu-nics/MoA" class="related-project-card" target="_blank">
-          <div class="related-project-logo">
-            <img src="https://raw.githubusercontent.com/thu-nics/MoA/master/resource/logo.png" alt="MoA Logo" />
-          </div>
-          <div class="related-project-name">MoA</div>
-          <div class="related-project-desc">Mixture of sparse attention for LLMs</div>
-          <div class="related-project-link">Learn more <i class="fas fa-arrow-right" style="font-size: 11px; margin-left: 4px;"></i></div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- Footer -->
 <footer class="footer">
   <div class="container">
@@ -2157,13 +2303,30 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Show/hide scroll to top button
+// Show/hide scroll to top button and handle nav transitions
 window.addEventListener('scroll', () => {
   const scrollTop = document.getElementById('scrollTop');
+  const navGlobal = document.getElementById('navGlobal');
+  const navLocal = document.getElementById('navLocal');
+  const hero = document.querySelector('.hero');
+  const heroBottom = hero.offsetTop + hero.offsetHeight;
+
+  // Scroll to top button
   if (window.scrollY > 500) {
     scrollTop.classList.add('visible');
   } else {
     scrollTop.classList.remove('visible');
+  }
+
+  // Show local nav after scrolling past hero section
+  if (window.scrollY > heroBottom - 100) {
+    navLocal.classList.add('nav-visible');
+    navGlobal.classList.add('hidden');
+    navLocal.classList.add('nav-sticky');
+  } else {
+    navLocal.classList.remove('nav-visible');
+    navGlobal.classList.remove('hidden');
+    navLocal.classList.remove('nav-sticky');
   }
 });
 
@@ -2517,6 +2680,25 @@ document.querySelectorAll('.workflow-stage').forEach((stage, index) => {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
   setActiveStage(0);
+
+  // Mobile dropdown toggle
+  const navLogoWrapper = document.getElementById('navLogoWrapper');
+  const navLogo = navLogoWrapper.querySelector('.nav-logo');
+
+  navLogo.addEventListener('click', (e) => {
+    // Only toggle on mobile (when hover doesn't work well)
+    if (window.innerWidth <= 700) {
+      e.preventDefault();
+      navLogoWrapper.classList.toggle('open');
+    }
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!navLogoWrapper.contains(e.target)) {
+      navLogoWrapper.classList.remove('open');
+    }
+  });
 });
 </script>
 
