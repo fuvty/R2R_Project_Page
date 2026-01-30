@@ -738,6 +738,11 @@
       background: var(--apple-light-gray);
     }
 
+    /* Dark section expandable hover fix */
+    .section-dark .expandable-section .expandable-header:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
     .expandable-title {
       font-size: 17px;
       font-weight: 600;
@@ -1255,11 +1260,11 @@
 
     <div class="problem-diagram reveal">
       <div class="problem-box">
-        <div class="problem-box-icon">🧠</div>
-        <h4>Large Models (32B)</h4>
-        <p>Accurate reasoning<br>Slow & expensive</p>
+        <div class="problem-box-icon">🚀</div>
+        <h4>Small Models (1.5B)</h4>
+        <p>Fast generation<br>Limited accuracy</p>
       </div>
-      <div class="arrow-icon">→</div>
+      <div class="arrow-icon">←</div>
       <div class="problem-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff;">
         <div class="problem-box-icon">⚡</div>
         <h4>R2R Routing</h4>
@@ -1267,9 +1272,9 @@
       </div>
       <div class="arrow-icon">→</div>
       <div class="problem-box">
-        <div class="problem-box-icon">🚀</div>
-        <h4>Small Models (1.5B)</h4>
-        <p>Fast generation<br>Limited accuracy</p>
+        <div class="problem-box-icon">🧠</div>
+        <h4>Large Models (32B)</h4>
+        <p>Accurate reasoning<br>Slow & expensive</p>
       </div>
     </div>
   </div>
@@ -1468,12 +1473,28 @@
     </div>
 
     <!-- Video Demo -->
-    <div class="demo-video reveal">
-      <video src="./static/videos/R2R_demo.mp4" loop muted playsinline controls></video>
+    <div class="reveal" style="margin-top: 48px;">
+      <div class="expandable-section">
+        <div class="expandable-header" onclick="toggleExpand(this)">
+          <span class="expandable-title">Watch Video Demo</span>
+          <div class="expandable-icon">
+            <i class="fas fa-plus" style="font-size: 12px;"></i>
+          </div>
+        </div>
+        <div class="expandable-content">
+          <div class="expandable-content-inner">
+            <div class="expandable-inner">
+              <div class="demo-video" style="margin: 0;">
+                <video src="./static/videos/R2R_demo.mp4" loop muted playsinline controls></video>
+              </div>
+              <p style="text-align: center; color: var(--apple-gray); font-size: 14px; margin-top: 16px;">
+                Side-by-side comparison: R1-32B (left) vs R2R (right). Red tokens are routed to LLM.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <p style="text-align: center; color: var(--apple-gray); font-size: 14px; margin-top: 16px;">
-      Side-by-side comparison: R1-32B (left) vs R2R (right). Red tokens are routed to LLM.
-    </p>
   </div>
 </section>
 
