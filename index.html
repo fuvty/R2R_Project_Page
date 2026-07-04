@@ -512,10 +512,18 @@
 
     .hero-cta {
       display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      animation: fadeInUp 0.8s ease-out 0.4s backwards;
+    }
+
+    .hero-actions {
+      display: flex;
       gap: 16px;
       flex-wrap: wrap;
       justify-content: center;
-      animation: fadeInUp 0.8s ease-out 0.4s backwards;
     }
 
     .btn {
@@ -1593,7 +1601,7 @@
       <a href="https://github.com/thu-nics/R2R" class="active">R2R</a>
       <a href="https://fuvty.github.io/TaH_project_page/">TaH</a>
       <a href="https://fuvty.github.io/C2C_Project_Page/">C2C</a>
-      <a href="https://github.com/thu-nics/FrameFusion">FrameFusion</a>
+      <a href="https://thu-nics.github.io/FrameFusion_Project_Page/">FrameFusion</a>
       <a href="https://github.com/thu-nics/MoA">MoA</a>
     </div>
   </div>
@@ -1638,9 +1646,9 @@
               <div class="nav-dropdown-desc">Communicate through KV-Cache between LLMs</div>
             </div>
           </a>
-          <a href="https://github.com/thu-nics/FrameFusion" class="nav-dropdown-item">
+          <a href="https://thu-nics.github.io/FrameFusion_Project_Page/" class="nav-dropdown-item">
             <div class="nav-dropdown-icon">
-              <img src="https://raw.githubusercontent.com/thu-nics/FrameFusion/main/example/image/logo.png" alt="FrameFusion" />
+              <img src="https://thu-nics.github.io/FrameFusion_Project_Page/static/images/transparant_logo.png" alt="FrameFusion" />
             </div>
             <div class="nav-dropdown-text">
               <div class="nav-dropdown-name">FrF</div>
@@ -1676,6 +1684,16 @@
 
 <!-- Hero Section -->
 <section class="hero">
+  <!-- Route-field canvas: reasoning paths that fork, return (neutral) or peel off (divergent) -->
+  <canvas id="routeCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;" aria-hidden="true"></canvas>
+
+  <!-- Center fade: radial gradient that clears the middle for text readability -->
+  <div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;
+    background: radial-gradient(ellipse 62% 66% at 50% 48%, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.88) 38%, rgba(255,255,255,0.42) 68%, rgba(255,255,255,0) 100%);
+    pointer-events:none;" aria-hidden="true"></div>
+
+  <!-- Content overlay -->
+  <div style="position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; width:100%;">
   <h1 class="hero-title">
     <span>Roads to Rome</span>
   </h1>
@@ -1698,21 +1716,498 @@
   </div>
 
   <div class="hero-cta">
-    <a href="https://arxiv.org/pdf/2505.21600" class="btn btn-primary">
-      <i class="fas fa-file-alt"></i> Read Paper
-    </a>
-    <a href="https://github.com/thu-nics/R2R" class="btn btn-secondary">
-      <i class="fab fa-github"></i> View Code
-    </a>
-    <a href="https://huggingface.co/nics-efc/R2R_router_collections" class="btn btn-secondary">
-      🤗 Models
-    </a>
-    <span class="hero-badge">
-      <i class="fas fa-award"></i>
-      NeurIPS 2025
-    </span>
+    <div class="hero-actions">
+      <a href="https://arxiv.org/pdf/2505.21600" class="btn btn-primary">
+        <i class="fas fa-file-alt"></i> Read Paper
+      </a>
+      <a href="https://github.com/thu-nics/R2R" class="btn btn-secondary">
+        <i class="fab fa-github"></i> View Code
+      </a>
+      <a href="https://huggingface.co/nics-efc/R2R_router_collections" class="btn btn-secondary">
+        🤗 Models
+      </a>
+      <span class="hero-badge">
+        <i class="fas fa-award"></i>
+        NeurIPS 2025
+      </span>
+    </div>
+  </div>
   </div>
 </section>
+
+<script>
+(function() {
+  const canvas = document.getElementById('routeCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Geometry ──────────────────────────────────────────────────────────
+  // Treadmill composition: each road has a fixed "pen" (the next-token
+  // frontier) while the drawn road slides away leftward beneath it.
+  // Roads form a living population: divergent forks birth a new road that
+  // continues forever, neutral forks split and merge back, and when the
+  // population exceeds the cap one road retires (fades out and scrolls off).
+  const STEP = 32;            // px between token nodes along a road
+  const NODE_R = 1.8;         // token node radius
+  const BIRTH_LEN = 5 * STEP; // px over which a newborn lane separates from its parent
+  const RED_LEN = 5 * STEP;   // px of divergence tint at a newborn road's junction
+  const MAX_ROADS = 9;        // population cap: beyond this, a road retires
+  const DEATH_FADE = 1.8;     // s for a retiring road to fade out
+  let roads = [];
+  let W = 0, H = 0;
+  let mouseX = -1000, mouseY = -1000;
+  let time = 0;
+
+  // Initial road bands as fractions of hero height. The middle band is
+  // populated too — the center vignette keeps the title legible while the
+  // roads stay visible at the flanks.
+  // penX: frontier position as fraction of width (staggered, outside vignette).
+  // Middle-band roads run under the text, so their pens extend further
+  // right — the frontier and its fork events stay clear of the copy.
+  const ROAD_DEFS = [
+    { yFrac: 0.14, penXFrac: 0.78, speed: 26 },
+    { yFrac: 0.26, penXFrac: 0.62, speed: 32 },
+    { yFrac: 0.42, penXFrac: 0.93, speed: 28 },
+    { yFrac: 0.58, penXFrac: 0.90, speed: 24 },
+    { yFrac: 0.74, penXFrac: 0.70, speed: 22 },
+    { yFrac: 0.85, penXFrac: 0.82, speed: 30 },
+    { yFrac: 0.94, penXFrac: 0.58, speed: 25 },
+  ];
+
+  // Undulation: two summed sines, per-lane phase
+  function laneY(baseY, phase, worldX) {
+    return baseY
+      + Math.sin(worldX * 0.006 + phase) * 12
+      + Math.sin(worldX * 0.0023 + phase * 1.7) * 18;
+  }
+
+  // A newborn road blends from its parent's lane into its own over BIRTH_LEN,
+  // so the split reads as one trace becoming two. Parent lane params are
+  // copied at birth, so the junction stays stable even if the parent retires.
+  function roadY(road, worldX) {
+    const own = laneY(road.baseY, road.phase, worldX);
+    const b = road.birth;
+    if (!b) return own;
+    const t = (worldX - b.worldX) / BIRTH_LEN;
+    if (t >= 1) return own;
+    const par = laneY(b.parentBaseY, b.parentPhase, worldX);
+    if (t <= 0) return par;
+    const s = t * t * (3 - 2 * t);
+    return par + (own - par) * s;
+  }
+
+  function makeRoad(baseY, penX, speed) {
+    return {
+      baseY, penX, speed,
+      penTarget: penX,
+      phase: Math.random() * Math.PI * 2,
+      scroll: Math.random() * 1000,
+      fork: null,      // active fork event on this road
+      loops: [],       // completed neutral splits, kept as permanent geometry
+      birth: null,     // set for roads born from a divergent fork
+      born: 0,
+      dying: false,
+      alphaMul: 1,
+    };
+  }
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    W = rect.width;
+    H = rect.height;
+
+    roads = ROAD_DEFS.map((def, i) => {
+      const road = makeRoad(def.yFrac * H, def.penXFrac * W, def.speed);
+      road.phase = i * 2.39996;   // golden-angle stagger
+      return road;
+    });
+  }
+
+  // ── Fork events ───────────────────────────────────────────────────────
+  // Neutral: the trace splits in two and shortly merges back into one.
+  // Divergent: the trace splits in two forever — a new road is born at the
+  // pen and the junction pulses with the LLM-correction gradient.
+  const FORK_INTERVAL = 2.2;      // s between fork spawns
+  const FORK_RESOLVE = 1.6;       // s at which a divergent correction completes
+  const FORK_TOTAL = 2.8;         // s full lifetime of a divergent fork event
+  const MERGE_LEN = 4 * STEP;     // px a neutral branch travels before rejoining
+  const MERGE_SETTLE = 0.9;       // s for a merged branch to relax to road alpha
+  let forkTimer = FORK_INTERVAL * 0.5;
+  // Weighted 5:6 neutral:divergent per the paper's label distribution
+  const forkTypeBag = ['n','d','n','d','d','n','d','n','n','d','d'];
+  let forkBagIdx = 0;
+
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+  // Free vertical space around a road, looking at the whole field: distance
+  // to the nearest other lane (or hero edge) above and below.
+  function freeSpace(road) {
+    let up = road.baseY - H * 0.04;
+    let down = H * 0.98 - road.baseY;
+    for (const other of roads) {
+      if (other === road) continue;
+      const d = other.baseY - road.baseY;
+      if (d < 0) up = Math.min(up, -d);
+      else if (d > 0) down = Math.min(down, d);
+    }
+    return { up, down };
+  }
+
+  function spawnChild(parent, dir) {
+    const worldX = parent.scroll + parent.penX;
+    // Place the new lane in the freest gap on the chosen side, keeping a
+    // healthy margin from existing lanes so traces don't pile up
+    const space = freeSpace(parent);
+    const room = dir < 0 ? space.up : space.down;
+    const off = clamp(room * 0.55, 48, 110);
+    const baseY = clamp(parent.baseY + dir * off, H * 0.05, H * 0.97);
+    const child = makeRoad(baseY, parent.penX, parent.speed);
+    child.scroll = parent.scroll;   // world coords align so the junction is seamless
+    // Inherit the parent's undulation phase (barely perturbed): the two
+    // traces stay parallel after the split instead of criss-crossing
+    child.phase = parent.phase + (Math.random() - 0.5) * 0.4;
+    // Mid-band pens stay far right, clear of the hero copy
+    const midBand = baseY > H * 0.30 && baseY < H * 0.70;
+    child.penTarget = midBand
+      ? clamp(parent.penX + (Math.random() - 0.5) * 0.24 * W, W * 0.86, W * 0.94)
+      : clamp(parent.penX + (Math.random() - 0.5) * 0.24 * W, W * 0.5, W * 0.86);
+    child.birth = { worldX: worldX, parentBaseY: parent.baseY, parentPhase: parent.phase };
+    child.born = time;
+    roads.push(child);
+  }
+
+  function spawnFork() {
+    const candidates = roads.filter(r => !r.fork && !r.dying);
+    if (candidates.length === 0) return;
+    const road = candidates[Math.floor(Math.random() * candidates.length)];
+    const type = forkTypeBag[forkBagIdx % forkTypeBag.length];
+    forkBagIdx++;
+    // Branch toward the side with more free space, so bulges and new lanes
+    // don't collide with neighboring traces
+    const space = freeSpace(road);
+    const dir = space.up > space.down ? -1 : 1;
+    road.fork = {
+      type: type,                          // 'n' neutral | 'd' divergent
+      age: 0,
+      dir: dir,                            // branch up or down
+      mergedAt: null,                      // time the neutral branch rejoined
+      // world-x of the fork point, so it scrolls away with the road
+      worldX: road.scroll + road.penX,
+    };
+    if (type === 'd') spawnChild(road, dir);  // one trace becomes two, forever
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────
+  // Divergence tint: the junction stretch of a newborn road reads red,
+  // relaxing to neutral ink as the road establishes itself.
+  function segColor(road, wx, alpha) {
+    const b = road.birth;
+    if (b) {
+      const u = (wx - b.worldX) / RED_LEN;
+      if (u < 1) {
+        const mix = 1 - Math.max(0, u);   // 1 at the junction → 0 downstream
+        const r = Math.round(29 + (239 - 29) * mix);
+        const g = Math.round(29 + (68 - 29) * mix);
+        const bl = Math.round(31 + (68 - 31) * mix);
+        return `rgba(${r},${g},${bl},${alpha + 0.06 * mix})`;
+      }
+    }
+    return `rgba(29,29,31,${alpha})`;
+  }
+
+  function drawRoad(road) {
+    const b = road.birth;
+    // Newborn roads only exist from their junction onward
+    const startX = b ? Math.max(-STEP, b.worldX - road.scroll) : -STEP;
+    const endX = road.penX;
+
+    // Lens: brighten roads near the cursor
+    let lensBoost = 0;
+    if (mouseX > -999) {
+      const dy = Math.abs(roadY(road, road.scroll + road.penX * 0.5) - mouseY);
+      // crude distance from cursor to road band
+      const d = Math.max(0, dy - 20);
+      lensBoost = Math.max(0, 1 - d / 140) * 0.10;
+    }
+
+    const baseAlpha = (0.10 + lensBoost) * road.alphaMul;
+
+    // Polyline in short segments so color can vary along the road
+    ctx.lineWidth = 1;
+    for (let x = startX; x < endX; x += 8) {
+      const x1 = Math.min(x + 8, endX);
+      const y0 = roadY(road, road.scroll + x);
+      const y1 = roadY(road, road.scroll + x1);
+      ctx.beginPath();
+      ctx.moveTo(x, y0);
+      ctx.lineTo(x1, y1);
+      ctx.strokeStyle = segColor(road, road.scroll + x, baseAlpha);
+      ctx.stroke();
+    }
+
+    // Token nodes, aligned to world grid so they scroll with the road
+    const firstWorld = Math.ceil((road.scroll + startX) / STEP) * STEP;
+    for (let wx = firstWorld; wx <= road.scroll + endX; wx += STEP) {
+      const x = wx - road.scroll;
+      const y = roadY(road, wx);
+      // node-level lens boost
+      let nodeAlpha = 0.14 + lensBoost;
+      if (mouseX > -999) {
+        const dx = x - mouseX, dyy = y - mouseY;
+        const dist = Math.sqrt(dx * dx + dyy * dyy);
+        if (dist < 140) nodeAlpha += Math.pow(1 - dist / 140, 0.7) * 0.25;
+      }
+      ctx.beginPath();
+      ctx.arc(x, y, NODE_R, 0, Math.PI * 2);
+      ctx.fillStyle = segColor(road, wx, nodeAlpha * road.alphaMul);
+      ctx.fill();
+    }
+
+    // Pen (frontier) node: slightly larger, always visible
+    const penY = roadY(road, road.scroll + road.penX);
+    ctx.beginPath();
+    ctx.arc(road.penX, penY, NODE_R + 1.2, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(29,29,31,${0.28 * road.alphaMul})`;
+    ctx.fill();
+
+    // Permanent merged loops: kept forever, settling from the active
+    // branch brightness down to the road's resting alpha
+    for (const loop of road.loops) {
+      const settle = Math.min(1, (time - loop.mergedAt) / MERGE_SETTLE);
+      const alpha = (0.36 + (0.14 - 0.36) * settle) * road.alphaMul;
+      drawBranch(road, loop, MERGE_LEN, alpha);
+
+      // Merge blink: soft blue at the rejoin node, right as the pen arrives
+      if (settle < 1) {
+        const p = branchPoint(road, loop, MERGE_LEN);
+        const blink = Math.sin(settle * Math.PI);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3 + blink * 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(10,132,255,${0.5 * blink * road.alphaMul})`;
+        ctx.fill();
+      }
+    }
+
+    if (road.fork) drawFork(road);
+  }
+
+  function branchPoint(road, split, s) {
+    // s: arc-length parameter (px) along a neutral branch from its fork
+    // point: it bulges out, then eases back and merges. `split` is either
+    // an active fork or a permanent merged loop ({worldX, dir}).
+    const fx = split.worldX - road.scroll;   // fork x in screen space (scrolls left)
+    const x = fx + s;
+    const baseY = roadY(road, split.worldX + s);
+    const t = Math.min(1, s / MERGE_LEN);
+    const offset = Math.sin(t * Math.PI) * 30;   // out and back
+    return { x: x, y: baseY + offset * split.dir };
+  }
+
+  function drawBranch(road, split, growLen, alpha) {
+    // Fine sampling with an exact endpoint: the bulge has much higher
+    // curvature than the road, so 4px steps keep it as smooth as the main
+    // line, and pinning the tip stops it advancing in visible jumps.
+    ctx.beginPath();
+    for (let s = 0; ; s += 4) {
+      const cs = Math.min(s, growLen);
+      const p = branchPoint(road, split, cs);
+      if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+      if (cs >= growLen) break;
+    }
+    ctx.strokeStyle = `rgba(29,29,31,${alpha})`;
+    ctx.lineWidth = 1.2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Token nodes along the branch, on the same world grid as the road,
+    // so the alternative reads as a real path rather than a thin line
+    const firstS = Math.ceil(split.worldX / STEP) * STEP - split.worldX;
+    for (let s = Math.max(firstS, STEP * 0.5); s <= growLen; s += STEP) {
+      const p = branchPoint(road, split, s);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, NODE_R, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(29,29,31,${alpha + 0.06})`;
+      ctx.fill();
+    }
+  }
+
+  function drawFork(road) {
+    const fork = road.fork;
+    const fx = fork.worldX - road.scroll;
+    const fy = roadY(road, fork.worldX);
+
+    // Divergent-only timings
+    const resolveT = Math.min(1, fork.age / FORK_RESOLVE);
+    const endFade = Math.min(1, Math.max(0, (FORK_TOTAL - fork.age) / (FORK_TOTAL - FORK_RESOLVE)));
+
+    if (fork.type === 'n') {
+      // ── Neutral: the trace visibly splits in two, then merges back ──
+      // Both alternatives are written by the pen at the same pace: the
+      // branch only extends as far as the pen has advanced past the fork,
+      // so main path and branch reach the merge point together. Once merged,
+      // step() converts the branch into permanent road geometry (loops).
+      const penWorld = road.scroll + road.penX;
+      const growLen = Math.min(penWorld - fork.worldX, MERGE_LEN);
+      if (growLen <= 0) return;
+      drawBranch(road, fork, growLen, 0.36 * road.alphaMul);
+    } else {
+      // ── Divergent: the newborn road (drawn as its own trace) carries the
+      // split; here we only fire the correction pulse at the junction —
+      // the one gradient moment — plus a brief bright on-path segment.
+      const pulse = Math.sin(Math.min(fork.age / FORK_RESOLVE, 1) * Math.PI);
+      if (pulse > 0.01) {
+        const r = 6 + pulse * 14;
+        const grad = ctx.createRadialGradient(fx, fy, 0, fx, fy, r);
+        grad.addColorStop(0, `rgba(118,75,162,${0.50 * pulse * road.alphaMul})`);
+        grad.addColorStop(0.6, `rgba(102,126,234,${0.28 * pulse * road.alphaMul})`);
+        grad.addColorStop(1, 'rgba(102,126,234,0)');
+        ctx.beginPath();
+        ctx.arc(fx, fy, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      // Corrected segments: brief bright gradient stroke continuing on-path
+      const brightLen = 3 * STEP * Math.min(1, fork.age / FORK_RESOLVE);
+      if (brightLen > 4 && endFade > 0.01) {
+        const gx0 = fx, gx1 = fx + brightLen;
+        const lg = ctx.createLinearGradient(gx0, fy, gx1, fy);
+        lg.addColorStop(0, `rgba(102,126,234,${0.45 * endFade * road.alphaMul})`);
+        lg.addColorStop(1, 'rgba(102,126,234,0)');
+        ctx.beginPath();
+        for (let x = gx0; x <= gx1; x += 8) {
+          const y = roadY(road, road.scroll + x);
+          if (x === gx0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = lg;
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+      }
+    }
+  }
+
+  function step(dt) {
+    time += dt;
+    for (const road of roads) {
+      road.scroll += road.speed * dt;
+      road.penX += (road.penTarget - road.penX) * Math.min(1, dt * 0.5);
+      if (road.dying) road.alphaMul = Math.max(0, road.alphaMul - dt / DEATH_FADE);
+      if (road.fork) {
+        const fork = road.fork;
+        fork.age += dt;
+        if (fork.type === 'n') {
+          // When the pen reaches the merge point, the branch becomes
+          // permanent road geometry and scrolls away with the trace
+          if (road.scroll + road.penX - fork.worldX >= MERGE_LEN) {
+            road.loops.push({ worldX: fork.worldX, dir: fork.dir, mergedAt: time });
+            road.fork = null;
+          }
+        } else if (fork.age > FORK_TOTAL) {
+          road.fork = null;
+        }
+      }
+      // Drop loops that have fully scrolled off the left edge
+      if (road.loops.length && road.loops[0].worldX + MERGE_LEN < road.scroll - STEP) {
+        road.loops.shift();
+      }
+    }
+
+    // Remove fully faded roads
+    roads = roads.filter(r => r.alphaMul > 0);
+
+    // Population control: too many traces → the most crowded lane retires,
+    // which relaxes the whole field instead of opening a random gap
+    if (roads.length > MAX_ROADS && !roads.some(r => r.dying)) {
+      const candidates = roads.filter(r => !r.fork && time - r.born > 4);
+      if (candidates.length > 0) {
+        let worst = candidates[0], worstRoom = Infinity;
+        for (const r of candidates) {
+          const s = freeSpace(r);
+          const room = Math.min(s.up, s.down);
+          if (room < worstRoom) { worstRoom = room; worst = r; }
+        }
+        worst.dying = true;
+      }
+    }
+
+    forkTimer -= dt;
+    if (forkTimer <= 0) {
+      spawnFork();
+      forkTimer = FORK_INTERVAL;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const road of roads) drawRoad(road);
+  }
+
+  // ── Loop, paused when hero is off-screen ─────────────────────────────
+  let running = true;
+  let lastT = performance.now();
+  function loop(now) {
+    if (!running) return;
+    const dt = Math.min(0.05, (now - lastT) / 1000);
+    lastT = now;
+    step(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  canvas.parentElement.addEventListener('mousemove', (e) => {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+  });
+  canvas.parentElement.addEventListener('mouseleave', () => {
+    mouseX = -1000;
+    mouseY = -1000;
+  });
+
+  function drawStaticFrame() {
+    // Static frame: a moment with one frozen neutral split mid-flight,
+    // its fork point placed so the branch is half-drawn at the pen
+    const r = roads[1];
+    r.fork = { type: 'n', age: 1, dir: -1, mergedAt: null, worldX: r.scroll + r.penX - MERGE_LEN * 0.6 };
+    draw();
+  }
+
+  window.addEventListener('resize', () => {
+    resize();
+    if (reducedMotion) drawStaticFrame();
+  });
+  resize();
+
+  if (reducedMotion) {
+    drawStaticFrame();
+    return;
+  }
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      const visible = entries[0].isIntersecting;
+      if (visible && !running) {
+        running = true;
+        lastT = performance.now();
+        requestAnimationFrame(loop);
+      } else if (!visible) {
+        running = false;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas.parentElement);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
 
 <!-- The Challenge Section -->
 <section class="section section-gray" id="problem">
